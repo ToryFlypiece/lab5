@@ -1,0 +1,55 @@
+[
+  {
+    "id": 1,
+    "name": "Flat 1",
+    "coordinates": {
+      "x": 10,
+      "y": -100
+    },
+    "creationDate": "2023-10-01T12:00:00Z",
+    "area": 75,
+    "numberOfRooms": 3,
+    "new": true,
+    "timeToMetroByTransport": 15.5,
+    "view": "PARK",
+    "house": {
+      "name": "House A",
+      "year": 2005,
+      "numberOfFlatsOnFloor": 4
+    }
+  },
+  {
+    "id": 2,
+    "name": "Flat 2",
+    "coordinates": {
+      "x": 20,
+      "y": -200
+    },
+    "creationDate": "2023-10-02T14:30:00Z",
+    "area": 90,
+    "numberOfRooms": 4,
+    "new": false,
+    "timeToMetroByTransport": 10.0,
+    "view": "STREET",
+    "house": null
+  },
+  {
+    "id": 3,
+    "name": "Flat 3",
+    "coordinates": {
+      "x": 30,
+      "y": -300
+    },
+    "creationDate": "2023-10-03T09:15:00Z",
+    "area": 60,
+    "numberOfRooms": 2,
+    "new": null,
+    "timeToMetroByTransport": 5.5,
+    "view": "NORMAL",
+    "house": {
+      "name": "House B",
+      "year": 2010,
+      "numberOfFlatsOnFloor": 6
+    }
+  }
+]

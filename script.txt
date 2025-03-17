@@ -1,0 +1,5 @@
+add {Flat 1,10,-100,75,3,true,17,PARK}
+add {Flat 2,20,-200,12,2,true,91,BAD}
+add {Flat 3,50,-300,151,4,false,124,NORMAL}
+add {Flat 4,50,299,57,7,true,36,STREET}
+print_field_ascending_number_of_rooms
