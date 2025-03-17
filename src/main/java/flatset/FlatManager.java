@@ -36,7 +36,12 @@ public class FlatManager {
     public void clearCollection() {
         flatSet.clear();
     }
-
+    /**
+     * Ищет квартиру в коллекции по её ID.
+     *
+     * @param id ID квартиры, которую необходимо найти.
+     * @return Optional<Flat>, содержащий найденную квартиру, если она существует.
+     */
     public Optional<Flat> findById(long id) {
         return flatSet.stream()
                 .filter(flat -> flat.getId() == id)
