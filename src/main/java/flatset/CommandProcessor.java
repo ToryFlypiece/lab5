@@ -62,15 +62,25 @@ public class CommandProcessor {
 
         scanner.close();
     }
-
+    /**
+     * Выводит все элементы коллекции на экран.
+     */
     private void showCollection() {
         flatManager.getFlatSet().forEach(System.out::println);
     }
-
+    /**
+     * Добавляет квартиру в коллекцию на основе введенных данных.
+     *
+     * @param argument Строка, содержащая данные для создания квартиры.
+     */
     private void addFlat(String argument) {
         // Логика добавления квартиры
     }
-
+    /**
+     * Удаляет квартиру из коллекции по её ID.
+     *
+     * @param argument Строка, содержащая ID квартиры.
+     */
     private void removeById(String argument) {
         try {
             long id = Long.parseLong(argument.trim());
@@ -80,12 +90,18 @@ public class CommandProcessor {
             System.err.println("Error removing element: " + e.getMessage());
         }
     }
-
+    /**
+     * Очищает коллекцию квартир.
+     */
     private void clearCollection() {
         flatManager.clearCollection();
         System.out.println("Collection cleared successfully.");
     }
-
+    /**
+     * Сохраняет коллекцию квартир в файл.
+     *
+     * @param filePath Путь к файлу, в который будет сохранена коллекция.
+     */
     private void saveCollection(String filePath) {
         FlatSaver.saveCollection(flatManager.getFlatSet(), filePath);
     }

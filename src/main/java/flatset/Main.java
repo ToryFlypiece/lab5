@@ -1,7 +1,9 @@
 package flatset;
 
 import java.util.HashSet;
-
+/**
+ * Главный класс приложения. Загружает данные из файла, создает FlatManager и запускает CommandProcessor.
+ */
 public class Main {
     public static void main(String[] args) {
         String filePath = "list.json";
