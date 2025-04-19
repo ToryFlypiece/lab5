@@ -7,9 +7,22 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Команда для вывода информации о домах, связанных с квартирами,
+ * в порядке убывания (по убыванию их сравнимости).
+ */
 public class PrintFieldDescendingHouseCommand implements Command {
+
+    /**
+     * Выполняет команду, которая отображает список домов, связанных с квартирами,
+     * отсортированных в порядке убывания. Пропускает квартиры без указанных домов.
+     *
+     * @param flatSet Коллекция квартир, содержащих дома.
+     * @param argument Не используется в данной команде.
+     */
     @Override
     public void execute(HashSet<Flat> flatSet, String argument) {
+        // Извлекаем дома, сортируем в порядке убывания и собираем в список
         List<House> houses = flatSet.stream()
                 .map(Flat::getHouse)
                 .filter(house -> house != null)
@@ -17,13 +30,13 @@ public class PrintFieldDescendingHouseCommand implements Command {
                 .collect(Collectors.toList());
 
         if (houses.isEmpty()) {
-            System.out.println("No houses found in the collection.");
+            System.out.println("В коллекции нет домов.");
             return;
         }
 
-        System.out.println("=== Houses (Descending Order) ===");
+        System.out.println("=== Дома (в порядке убывания) ===");
         houses.forEach(house ->
-                System.out.printf("- %s (Year: %d, Flats/floor: %d)%n",
+                System.out.printf("- %s (Год: %d, Квартир/этажей: %d)%n",
                         house.getName(),
                         house.getYear(),
                         house.getNumberOfFlatsOnFloor())

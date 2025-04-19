@@ -4,20 +4,33 @@ import flatset.Flat;
 import flatset.FlatParser;
 import java.util.HashSet;
 
-public class RemoveGreaterCommand implements Command
-{
+/**
+ * Команда для удаления всех квартир, значение которых больше заданной квартиры.
+ */
+public class RemoveGreaterCommand implements Command {
+
+    /**
+     * Выполняет команду удаления всех квартир, чьи значения больше значения заданной квартиры.
+     * Значение квартиры сравнивается с помощью метода `compareTo`.
+     *
+     * @param flatSet Коллекция квартир, из которой удаляются квартиры.
+     * @param argument Строка, содержащая данные квартиры для сравнения.
+     */
     @Override
     public void execute(HashSet<Flat> flatSet, String argument) {
         try {
+            // Парсинг квартиры для сравнения
             Flat comparisonFlat = FlatParser.parseFlat(argument);
             int initialSize = flatSet.size();
 
+            // Удаление квартир с значениями больше заданной квартиры
             flatSet.removeIf(flat -> flat.compareTo(comparisonFlat) > 0);
 
+            // Подсчёт количества удалённых квартир
             int removedCount = initialSize - flatSet.size();
-            System.out.println("Removed " + removedCount + " flats greater than the specified one.");
+            System.out.println("Удалено " + removedCount + " квартир со значениями выше заданного.");
         } catch (Exception e) {
-            System.err.println("Error removing flats: " + e.getMessage());
+            System.err.println("Ошибка удаления квартир: " + e.getMessage());
         }
     }
 }

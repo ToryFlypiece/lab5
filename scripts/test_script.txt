@@ -1,0 +1,30 @@
+add {Flat 1,10,-100,75,3,true,17,PARK}
+add {Flat 2,20,-200,12,2,true,91,BAD}
+add {Flat 3,50,-300,151,4,false,124,NORMAL}
+add {Flat 4,50,299,57,7,true,36,STREET}
+
+# Печать количества комнат в порядке возрастания
+print_field_ascending_number_of_rooms
+
+# Добавление еще нескольких квартир
+add {Flat 5,10,10,80,2,true,25,STREET}
+add {Flat 6,40,50,65,5,false,12,PARK}
+add {Flat 7,15,-50,45,3,true,20,BAD}
+
+# Печать количества комнат снова
+print_field_ascending_number_of_rooms
+
+# Обновление квартиры с ID 1
+update_by_id 1 {name: "Updated Flat 1", area: 100, numberOfRooms: 4, view: "STREET"}
+
+# Удаление квартиры с ID 3
+remove_by_id 3
+
+# Печать коллекции
+show
+
+# Удаление квартир с количеством комнат больше 4
+remove_greater 4
+
+# Печать коллекции после удаления
+show

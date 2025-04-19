@@ -20,7 +20,10 @@ class FlatCollectionTest {
         flatSet = new HashSet<>();
     }
 
-    // Test 1: Добавление элемента в коллекцию
+    /**
+     * Тест добавления квартиры в коллекцию.
+     * Проверяет, что квартира добавляется в коллекцию и ее размер увеличивается.
+     */
     @Test
     void testAddFlat() {
         Flat flat = new Flat(1, "Flat 1", new Coordinates(10, -100), ZonedDateTime.now(), 75, 3, true, 15.5, View.PARK, null);
@@ -29,7 +32,10 @@ class FlatCollectionTest {
         assertTrue(flatSet.contains(flat));
     }
 
-    // Test 2: Удаление элемента по ID
+    /**
+     * Тест удаления квартиры по ID.
+     * Проверяет, что квартира удаляется, если ее ID совпадает.
+     */
     @Test
     void testRemoveById() {
         Flat flat = new Flat(1, "Flat 1", new Coordinates(10, -100), ZonedDateTime.now(), 75, 3, true, 15.5, View.PARK, null);
@@ -38,7 +44,10 @@ class FlatCollectionTest {
         assertEquals(0, flatSet.size());
     }
 
-    // Test 3: Очистка коллекции
+    /**
+     * Тест очистки коллекции.
+     * Проверяет, что коллекция очищается после вызова метода clear().
+     */
     @Test
     void testClearCollection() {
         Flat flat = new Flat(1, "Flat 1", new Coordinates(10, -100), ZonedDateTime.now(), 75, 3, true, 15.5, View.PARK, null);
@@ -47,7 +56,10 @@ class FlatCollectionTest {
         assertTrue(flatSet.isEmpty());
     }
 
-    // Test 4: Обновление элемента
+    /**
+     * Тест обновления данных квартиры.
+     * Проверяет, что квартира обновляется в коллекции.
+     */
     @Test
     void testUpdateFlat() {
         Flat flat = new Flat(1, "Flat 1", new Coordinates(10, -100), ZonedDateTime.now(), 75, 3, true, 15.5, View.PARK, null);
@@ -61,7 +73,10 @@ class FlatCollectionTest {
         assertTrue(flatSet.contains(updatedFlat));
     }
 
-    // Test 5: add_if_greater
+    /**
+     * Тест добавления квартиры, если она больше самой большой квартиры в коллекции.
+     * Проверяет, что новая квартира добавляется, если она больше по сравнению с самой большой квартирой в коллекции.
+     */
     @Test
     void testAddIfMax() {
         Flat flat1 = new Flat(1, "Flat 1", new Coordinates(10, -100), ZonedDateTime.now(), 75, 3, true, 15.5, View.PARK, null);
@@ -79,7 +94,10 @@ class FlatCollectionTest {
         assertTrue(flatSet.contains(newFlat));
     }
 
-    // Test 6: add_if_min
+    /**
+     * Тест добавления квартиры, если она меньше самой маленькой квартиры в коллекции.
+     * Проверяет, что новая квартира добавляется, если она меньше по сравнению с самой маленькой квартирой в коллекции.
+     */
     @Test
     void testAddIfMin() {
         Flat flat1 = new Flat(1, "Flat 1", new Coordinates(10, -100), ZonedDateTime.now(), 75, 3, true, 15.5, View.PARK, null);
@@ -97,7 +115,10 @@ class FlatCollectionTest {
         assertTrue(flatSet.contains(newFlat));
     }
 
-    // Test 7: remove_if_greater
+    /**
+     * Тест удаления квартир, которые больше заданной квартиры.
+     * Проверяет, что квартиры, которые больше определенной, удаляются из коллекции.
+     */
     @Test
     void testRemoveGreater() {
         Flat flat1 = new Flat(1, "Flat 1", new Coordinates(10, -100), ZonedDateTime.now(), 75, 3, true, 15.5, View.PARK, null);
@@ -115,7 +136,10 @@ class FlatCollectionTest {
         assertFalse(flatSet.contains(flat3));
     }
 
-    // Test 8: Вывод уникальных домов
+    /**
+     * Тест вывода уникальных домов.
+     * Проверяет, что выводятся только уникальные дома из коллекции квартир.
+     */
     @Test
     void testPrintUniqueHouses() {
         House house1 = new House("House A", 2005, 4);
@@ -137,7 +161,10 @@ class FlatCollectionTest {
         assertTrue(uniqueHouses.contains(house2));
     }
 
-    // Test 9: Вывод кол-ва комнат в порядке возрастания
+    /**
+     * Тест вывода количества комнат в порядке возрастания.
+     * Проверяет, что количество комнат квартир выводится в порядке возрастания.
+     */
     @Test
     void testPrintNumberOfRoomsAscending() {
         Flat flat1 = new Flat(1, "Flat 1", new Coordinates(10, -100), ZonedDateTime.now(), 75, 3, true, 15.5, View.PARK, null);
@@ -156,7 +183,10 @@ class FlatCollectionTest {
         assertArrayEquals(new long[]{3, 4, 5}, sortedRooms);
     }
 
-    // Test 10: Вывод домов в порядке убывания
+    /**
+     * Тест вывода домов в порядке убывания.
+     * Проверяет, что дома сортируются и выводятся в порядке убывания.
+     */
     @Test
     void testPrintHouseDescending() {
         House house1 = new House("House A", 2005, 4);

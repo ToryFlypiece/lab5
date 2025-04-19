@@ -1,78 +1,145 @@
 package flatset;
 
-import javax.json.*;
-import java.io.*;
-import java.util.HashSet;
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.time.ZonedDateTime;
-/**
- * Класс FlatLoader отвечает за загрузку данных о квартирах из JSON-файла.
- * Данные загружаются в коллекцию HashSet<Flat>.
- */
+import java.util.HashSet;
+
 public class FlatLoader {
+    private static final String DEFAULT_DATA_FILE = "flats.json";
+
     /**
-     * Загружает данные о квартирах из JSON-файла.
-     *
-     * @param filePath Путь к JSON-файлу, из которого загружаются данные.
-     * @return Коллекция HashSet<Flat>, содержащая загруженные данные.
+     * Загружает исходные данные из файла по умолчанию
+     * @return Множество загруженных квартир или пустое множество, если файл не найден
      */
-    public static HashSet<Flat> loadDataFromFile(String filePath) {
+    public static HashSet<Flat> loadInitialData() {
+        return loadInitialData(DEFAULT_DATA_FILE);
+    }
+
+    /**
+     * Загружает исходные данные из указанного файла
+     * @param filePath Путь к JSON-файлу с данными о квартирах
+     * @return Множество загруженных квартир или пустое множество, если файл не найден/некорректен
+     */
+    public static HashSet<Flat> loadInitialData(String filePath) {
+        try {
+            System.out.println("Загрузка данных из " + filePath + "...");
+            HashSet<Flat> flats = loadFromFile(filePath);
+            System.out.println("Успешно загружено " + flats.size() + " квартир");
+            return flats;
+        } catch (FileNotFoundException e) {
+            System.out.println("Файл с данными не найден - начинаем с пустой коллекции");
+            return new HashSet<>();
+        } catch (Exception e) {
+            System.err.println("Предупреждение: Не удалось загрузить данные - " + e.getMessage());
+            return new HashSet<>();
+        }
+    }
+
+    /**
+     * Непосредственно загружает квартиры из указанного JSON-файла
+     * @param filePath Путь к JSON-файлу
+     * @return Множество загруженных квартир
+     * @throws FileNotFoundException если указанный файл не существует
+     * @throws IOException при проблемах с чтением файла
+     * @throws javax.json.JsonException при ошибках парсинга JSON
+     */
+    public static HashSet<Flat> loadFromFile(String filePath)
+            throws FileNotFoundException, IOException {
         HashSet<Flat> flatSet = new HashSet<>();
 
-        try (FileInputStream dataStream = new FileInputStream(filePath);
-             BufferedInputStream bufferedStream = new BufferedInputStream(dataStream);
-             JsonReader jsonReader = Json.createReader(bufferedStream)) {
+        try (FileInputStream fis = new FileInputStream(filePath);
+             BufferedInputStream bis = new BufferedInputStream(fis);
+             JsonReader jsonReader = Json.createReader(bis)) {
 
             JsonArray jsonArray = jsonReader.readArray();
             for (JsonObject jsonObject : jsonArray.getValuesAs(JsonObject.class)) {
-                Flat flat = parseFlatFromJson(jsonObject);
-                flatSet.add(flat);
+                try {
+                    Flat flat = parseJsonObject(jsonObject);
+                    flatSet.add(flat);
+                } catch (Exception e) {
+                    System.err.println("Пропускаем некорректную запись о квартире: " + e.getMessage());
+                }
             }
-        } catch (FileNotFoundException e) {
-            System.err.println("Error: File not found - " + e.getMessage());
-        } catch (IOException e) {
-            System.err.println("Error: IO Exception - " + e.getMessage());
         }
-
         return flatSet;
     }
+
     /**
-     * Преобразует JSON-объект в объект класса Flat.
-     *
-     * @param jsonObject JSON-объект, содержащий данные о квартире.
-     * @return Объект Flat, созданный на основе данных из JSON.
+     * Парсит JSON-объект в объект Flat
+     * @param jsonObject JSON-объект с данными о квартире
+     * @return Распарсенный объект Flat
+     * @throws IllegalArgumentException если отсутствуют обязательные поля или они некорректны
      */
-
-    private static Flat parseFlatFromJson(JsonObject jsonObject) {
+    private static Flat parseJsonObject(JsonObject jsonObject) {
         Flat flat = new Flat();
+
+        // Обязательные поля с валидацией
+        if (!jsonObject.containsKey("id")) {
+            throw new IllegalArgumentException("Отсутствует обязательное поле: id");
+        }
         flat.setId(jsonObject.getInt("id"));
-        flat.setName(jsonObject.getString("name"));
 
-        JsonObject coordinatesJson = jsonObject.getJsonObject("coordinates");
-        Coordinates coordinates = new Coordinates(coordinatesJson.getInt("x"), coordinatesJson.getInt("y"));
-        flat.setCoordinates(coordinates);
+        flat.setName(getStringField(jsonObject, "name"));
+        flat.setCreationDate(ZonedDateTime.parse(getStringField(jsonObject, "creationDate")));
 
-        flat.setCreationDate(ZonedDateTime.parse(jsonObject.getString("creationDate")));
-        flat.setArea(jsonObject.getInt("area"));
-        flat.setNumberOfRooms(jsonObject.getInt("numberOfRooms"));
+        // Парсинг координат
+        if (!jsonObject.containsKey("coordinates")) {
+            throw new IllegalArgumentException("Отсутствует объект coordinates");
+        }
+        JsonObject coords = jsonObject.getJsonObject("coordinates");
+        flat.setCoordinates(new Coordinates(
+                getIntField(coords, "x"),
+                getIntField(coords, "y")
+        ));
 
-        if (jsonObject.containsKey("new") && !jsonObject.isNull("new")) {
+        // Числовые поля
+        flat.setArea(getIntField(jsonObject, "area"));
+        flat.setNumberOfRooms(getIntField(jsonObject, "numberOfRooms"));
+
+        // Опциональное булево поле
+        if (jsonObject.containsKey("new")) {
             flat.setNew(jsonObject.getBoolean("new"));
-        } else {
-            flat.setNew(false);
         }
 
+        // Время до метро
         flat.setTimeToMetroByTransport(jsonObject.getJsonNumber("timeToMetroByTransport").doubleValue());
-        flat.setView(View.valueOf(jsonObject.getString("view")));
 
-        if (!jsonObject.isNull("house")) {
+        // Перечисление View
+        flat.setView(View.valueOf(getStringField(jsonObject, "view")));
+
+        // Дом (опционально)
+        if (jsonObject.containsKey("house") && !jsonObject.isNull("house")) {
             JsonObject houseJson = jsonObject.getJsonObject("house");
             House house = new House();
-            house.setName(houseJson.getString("name"));
-            house.setYear(houseJson.getInt("year"));
-            house.setNumberOfFlatsOnFloor(houseJson.getInt("numberOfFlatsOnFloor"));
+            house.setName(getStringField(houseJson, "name"));
+            house.setYear(getIntField(houseJson, "year"));
+            house.setNumberOfFlatsOnFloor(getIntField(houseJson, "numberOfFlatsOnFloor"));
             flat.setHouse(house);
         }
 
         return flat;
+    }
+
+    // Вспомогательный метод для обязательных строковых полей
+    private static String getStringField(JsonObject obj, String field) {
+        if (!obj.containsKey(field)) {
+            throw new IllegalArgumentException("Отсутствует обязательное поле: " + field);
+        }
+        return obj.getString(field);
+    }
+
+    // Вспомогательный метод для обязательных целочисленных полей
+    private static int getIntField(JsonObject obj, String field) {
+        if (!obj.containsKey(field)) {
+            throw new IllegalArgumentException("Отсутствует обязательное поле: " + field);
+        }
+        return obj.getInt(field);
     }
 }
