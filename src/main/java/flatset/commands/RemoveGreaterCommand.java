@@ -1,7 +1,7 @@
 package flatset.commands;
 
 import flatset.Flat;
-import flatset.FlatParser;
+import flatset.utils.FlatParser;
 import java.util.HashSet;
 
 /**

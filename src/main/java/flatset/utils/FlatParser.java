@@ -1,4 +1,4 @@
-package flatset;
+package flatset.utils;
 
 import flatset.Flat;
 import flatset.Coordinates;
@@ -9,7 +9,6 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import java.io.StringReader;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 
 public class FlatParser {

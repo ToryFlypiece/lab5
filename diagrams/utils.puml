@@ -1,0 +1,57 @@
+@startuml FlatLoader
+package flatset.utils {
+    class FlatLoader {
+        - DEFAULT_DATA_FILE : String
+    }
+}
+
+class Flat
+class Coordinates
+class House
+class View
+
+FlatLoader ..> Flat
+FlatLoader ..> Coordinates
+FlatLoader ..> House
+FlatLoader ..> View
+
+@enduml
+
+
+@startuml FlatParser
+package flatset.utils {
+    class FlatParser {
+        - MIN_FIELDS : int
+        - FIELD_SEPARATOR : String
+    }
+}
+
+class Flat
+class Coordinates
+class House
+class View
+
+FlatParser ..> Flat
+FlatParser ..> Coordinates
+FlatParser ..> House
+FlatParser ..> View
+
+@enduml
+
+
+@startuml FlatUpdater
+package flatset.utils {
+    class FlatUpdater
+}
+
+class Flat
+class Coordinates
+class House
+class View
+
+FlatUpdater ..> Flat
+FlatUpdater ..> Coordinates
+FlatUpdater ..> House
+FlatUpdater ..> View
+
+@enduml

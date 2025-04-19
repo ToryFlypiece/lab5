@@ -1,4 +1,9 @@
-package flatset;
+package flatset.utils;
+
+import flatset.Coordinates;
+import flatset.Flat;
+import flatset.House;
+import flatset.View;
 
 import javax.json.Json;
 import javax.json.JsonArray;

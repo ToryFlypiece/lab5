@@ -1,6 +1,8 @@
 package flatset;
 
 import flatset.commands.CommandManager;
+import flatset.utils.FlatLoader;
+
 import java.util.HashSet;
 import java.util.Scanner;
 

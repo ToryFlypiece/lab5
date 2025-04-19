@@ -1,0 +1,45 @@
+@startuml
+
+hide empty members
+skinparam nodesep 1
+skinparam ranksep 1
+package flatset.commands {
+
+    interface Command {
+        +execute(flatSet: HashSet<Flat>, argument: String)
+    }
+
+    class CommandManager {
+        -commands: Map<String, Command>
+        -flatSet: HashSet<Flat>
+        -isRunning: boolean
+        +registerCommand(name: String, command: Command)
+        +executeCommand(input: String)
+        +isRunning(): boolean
+    }
+
+    rectangle "Command Implementations" as CommandImpls {
+        class AddCommand
+        class AddIfMaxCommand
+        class ClearCommand
+        class ExecuteScriptCommand
+        class HelpCommand
+        class InfoCommand
+        class PrintFieldAscendingNumberOfRoomsCommand
+        class PrintFieldDescendingHouseCommand
+        class PrintUniqueHouseCommand
+        class RemoveByIdCommand
+        class RemoveGreaterCommand
+        class SaveCommand
+        class ShowCommand
+        class UpdateByIdCommand
+        class UpdateCommand
+    }
+
+    ' Single representative class for inheritance arrow
+    Command <|.. CommandImpls
+
+    CommandManager --> Command : uses
+}
+
+@enduml

@@ -1,0 +1,41 @@
+@startuml flatset_classes_diagram
+
+package flatset {
+
+  class House {
+    - String name
+    - int year
+    - int numberOfFlatsOnFloor
+  }
+
+  enum View {
+    <size:14>S T R E E T</size>
+    <size:14>P A R K</size>
+    <size:14>B A D</size>
+    <size:14>N O R M A L</size>
+  }
+
+  class Flat {
+    - long id
+    - String name
+    - Coordinates coordinates
+    - ZonedDateTime creationDate
+    - long area
+    - long numberOfRooms
+    - Boolean isNew
+    - double timeToMetroByTransport
+    - View view
+    - House house
+  }
+
+  class Coordinates {
+    - int x
+    - int y
+  }
+}
+
+Flat "1" *-- "1" Coordinates
+Flat "1" *-- "0..1" House
+Flat "1" *-- "1" View
+
+@enduml
