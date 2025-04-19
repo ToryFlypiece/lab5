@@ -21,12 +21,12 @@ public class ClearCommand implements Command {
             flatSet.clear();
 
             if (sizeBefore > 0) {
-                System.out.println("Все " + sizeBefore + " квартир(ы) из коллекции успешно удалены.");
+                System.out.println("All " + sizeBefore + " flats have been succesfully removed.");
             } else {
-                System.out.println("Коллекция уже пуста.");
+                System.out.println("Collection is already empty.");
             }
         } catch (Exception e) {
-            System.err.println("Ошибка очистки коллекции: " + e.getMessage());
+            System.err.println("Error clearing the collection: " + e.getMessage());
         }
     }
 }

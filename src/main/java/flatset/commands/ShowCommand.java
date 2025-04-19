@@ -18,9 +18,9 @@ public class ShowCommand implements Command {
     @Override
     public void execute(HashSet<Flat> flatSet, String argument) {
         if (flatSet.isEmpty()) {
-            System.out.println("Коллекция пуста.");
+            System.out.println("Collection is empty.");
         } else {
-            System.out.println("Элементы коллекции:");
+            System.out.println("Elements of the collection:");
             // Вывод всех квартир в коллекции
             for (Flat flat : flatSet) {
                 System.out.println(flat);

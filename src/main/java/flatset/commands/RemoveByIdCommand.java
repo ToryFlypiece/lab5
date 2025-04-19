@@ -20,7 +20,7 @@ public class RemoveByIdCommand implements Command {
         try {
             // Проверка на пустой или неверный аргумент
             if (argument == null || argument.trim().isEmpty()) {
-                System.out.println("Ошибка: ID не определено. Использование: remove_by_id <id>");
+                System.out.println("Error: ID is not defined. Usage: remove_by_id <id>");
                 return;
             }
 
@@ -30,14 +30,14 @@ public class RemoveByIdCommand implements Command {
             boolean removed = flatSet.removeIf(flat -> flat.getId() == id);
 
             if (removed) {
-                System.out.println("Квартира с ID " + id + " была успешно удалена.");
+                System.out.println("Apartment with ID " + id + " has been successfully removed.");
             } else {
-                System.out.println("Не найдена квартира с ID " + id + ".");
+                System.out.println("No apartment found with ID " + id + ".");
             }
         } catch (NumberFormatException e) {
-            System.err.println("Ошибка: Недопустимый формат ID. ID должен быть числом.");
+            System.err.println("Error: Invalid ID format. ID must be a number.");
         } catch (Exception e) {
-            System.err.println("Ошибка удаления квартиры: " + e.getMessage());
+            System.err.println("Error deleting apartment: " + e.getMessage());
         }
     }
 }

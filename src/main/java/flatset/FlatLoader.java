@@ -29,15 +29,15 @@ public class FlatLoader {
      */
     public static HashSet<Flat> loadInitialData(String filePath) {
         try {
-            System.out.println("Загрузка данных из " + filePath + "...");
+            System.out.println("Loading data from " + filePath + "...");
             HashSet<Flat> flats = loadFromFile(filePath);
-            System.out.println("Успешно загружено " + flats.size() + " квартир");
+            System.out.println("Successfully loaded " + flats.size() + " apartments");
             return flats;
         } catch (FileNotFoundException e) {
-            System.out.println("Файл с данными не найден - начинаем с пустой коллекции");
+            System.out.println("Data file not found - starting with an empty collection");
             return new HashSet<>();
         } catch (Exception e) {
-            System.err.println("Предупреждение: Не удалось загрузить данные - " + e.getMessage());
+            System.err.println("Warning: Failed to load data - " + e.getMessage());
             return new HashSet<>();
         }
     }
@@ -64,7 +64,7 @@ public class FlatLoader {
                     Flat flat = parseJsonObject(jsonObject);
                     flatSet.add(flat);
                 } catch (Exception e) {
-                    System.err.println("Пропускаем некорректную запись о квартире: " + e.getMessage());
+                    System.err.println("Skipping invalid apartment record: " + e.getMessage());
                 }
             }
         }
@@ -82,7 +82,7 @@ public class FlatLoader {
 
         // Обязательные поля с валидацией
         if (!jsonObject.containsKey("id")) {
-            throw new IllegalArgumentException("Отсутствует обязательное поле: id");
+            throw new IllegalArgumentException("Missing mandatory field: id");
         }
         flat.setId(jsonObject.getInt("id"));
 
@@ -91,7 +91,7 @@ public class FlatLoader {
 
         // Парсинг координат
         if (!jsonObject.containsKey("coordinates")) {
-            throw new IllegalArgumentException("Отсутствует объект coordinates");
+            throw new IllegalArgumentException("Missing coordinates object");
         }
         JsonObject coords = jsonObject.getJsonObject("coordinates");
         flat.setCoordinates(new Coordinates(
@@ -130,7 +130,7 @@ public class FlatLoader {
     // Вспомогательный метод для обязательных строковых полей
     private static String getStringField(JsonObject obj, String field) {
         if (!obj.containsKey(field)) {
-            throw new IllegalArgumentException("Отсутствует обязательное поле: " + field);
+            throw new IllegalArgumentException("Missing mandatory field: " + field);
         }
         return obj.getString(field);
     }
@@ -138,7 +138,7 @@ public class FlatLoader {
     // Вспомогательный метод для обязательных целочисленных полей
     private static int getIntField(JsonObject obj, String field) {
         if (!obj.containsKey(field)) {
-            throw new IllegalArgumentException("Отсутствует обязательное поле: " + field);
+            throw new IllegalArgumentException("Missing mandatory field: " + field);
         }
         return obj.getInt(field);
     }

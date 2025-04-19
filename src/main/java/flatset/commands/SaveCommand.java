@@ -61,10 +61,10 @@ public class SaveCommand implements Command {
 
             // Запись собранного JSON в файл
             jsonWriter.writeArray(arrayBuilder.build());
-            System.out.println("Успешно сохранено " + flatSet.size() + " квартира в " + filename);
+            System.out.println("Successfully saved " + flatSet.size() + " apartment(s) to " + filename);
 
         } catch (Exception e) {
-            System.err.println("Ошибка сохранения данных: " + e.getMessage());
+            System.err.println("Error saving data: " + e.getMessage());
         }
     }
 }

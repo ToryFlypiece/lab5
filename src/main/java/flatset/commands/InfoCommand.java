@@ -20,10 +20,10 @@ public class InfoCommand implements Command {
     @Override
     public void execute(HashSet<Flat> flatSet, String argument) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        System.out.println("=== Информация о коллекции ===");
-        System.out.println("Тип: " + flatSet.getClass().getSimpleName());
-        System.out.println("Время инициализации: " + LocalDateTime.now().format(formatter));
-        System.out.println("Количество элементов: " + flatSet.size());
-        System.out.println("Размер в памяти: ~" + (flatSet.size() * 128) + " bytes");
+        System.out.println("=== Collection Information ===");
+        System.out.println("Type: " + flatSet.getClass().getSimpleName());
+        System.out.println("Initialization time: " + LocalDateTime.now().format(formatter));
+        System.out.println("Number of elements: " + flatSet.size());
+        System.out.println("Memory size: ~" + (flatSet.size() * 128) + " bytes");
     }
 }

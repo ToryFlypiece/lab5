@@ -25,7 +25,7 @@ public class UpdateByIdCommand implements Command {
             // Разделяем аргумент на ID и данные для обновления
             String[] parts = argument.split(" ", 2);
             if (parts.length != 2) {
-                throw new IllegalArgumentException("Использование: update_by_id id {field:value}");
+                throw new IllegalArgumentException("Usage: update_by_id id {field:value}");
             }
 
             long id = Long.parseLong(parts[0]);
@@ -39,13 +39,13 @@ public class UpdateByIdCommand implements Command {
             // Если квартира найдена, обновляем ее поля
             if (toUpdate.isPresent()) {
                 FlatUpdater.updateFields(toUpdate.get(), jsonData);
-                System.out.println("Обновлены поля квартиры с ID " + id);
+                System.out.println("Updated fields of apartment with ID " + id);
             } else {
-                System.out.println("Не найдена квартира с ID " + id);
+                System.out.println("Apartment with ID " + id + " not found.");
             }
         } catch (Exception e) {
             // Выводим ошибку, если что-то пошло не так
-            System.err.println("Ошибка обновления: " + e.getMessage());
+            System.err.println("Error updating: " + e.getMessage());
         }
     }
 }

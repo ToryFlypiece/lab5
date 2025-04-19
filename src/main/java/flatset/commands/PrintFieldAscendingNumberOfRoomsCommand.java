@@ -27,20 +27,20 @@ public class PrintFieldAscendingNumberOfRoomsCommand implements Command {
                 .collect(Collectors.groupingBy(Flat::getNumberOfRooms));
 
         if (flatsByRooms.isEmpty()) {
-            System.out.println("В коллекции нет ни одной квартиры.");
+            System.out.println("The collection contains no flats.");
             return;
         }
 
-        System.out.println("=== Кол-во комнат (В порядке возрастания) ===");
+        System.out.println("=== Number of Rooms (In Ascending Order) ===");
 
         // Сортируем по количеству комнат
         flatsByRooms.keySet().stream()
                 .sorted()
                 .forEach(rooms -> {
                     // Для каждого количества комнат выводим соответствующие ID квартир
-                    System.out.print("- " + rooms + " комнат" +
-                            (rooms % 10 == 1 && rooms % 100 != 11 ? "а" :
-                                    (rooms % 10 >= 2 && rooms % 10 <= 4 && (rooms % 100 < 10 || rooms % 100 >= 20) ? "ы" : "")));
+                    System.out.print("- " + rooms + " room" +
+                            (rooms % 10 == 1 && rooms % 100 != 11 ? "s" :
+                                    (rooms % 10 >= 2 && rooms % 10 <= 4 && (rooms % 100 < 10 || rooms % 100 >= 20) ? "s" : "")));
 
                     // Выводим ID квартир с данным количеством комнат
                     List<Flat> flats = flatsByRooms.get(rooms);

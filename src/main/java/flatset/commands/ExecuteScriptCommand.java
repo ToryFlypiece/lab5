@@ -34,16 +34,16 @@ public class ExecuteScriptCommand implements Command {
                 }
 
                 try {
-                    System.out.println("Выполняется: " + line);
+                    System.out.println("Executing: " + line);
                     tempManager.executeCommand(line);
                 } catch (Exception e) {
-                    System.err.println("Ошибка при выполнении команды: " + line);
-                    System.err.println("Ошибка: " + e.getMessage());
+                    System.err.println("Error executing the command: " + line);
+                    System.err.println("Error: " + e.getMessage());
                     // Продолжаем выполнение следующих команд
                 }
             }
         } catch (Exception e) {
-            System.err.println("Выполнение скрипта не удалось: " + e.getMessage());
+            System.err.println("Script execution failed: " + e.getMessage());
         }
     }
 }

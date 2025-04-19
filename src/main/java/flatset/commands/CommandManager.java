@@ -77,7 +77,7 @@ public class CommandManager {
         if (command != null) {
             command.execute(flatSet, argument);
         } else {
-            System.out.println("Неизвестная команда: " + commandName);
+            System.out.println("Unknown command: " + commandName);
         }
     }
 

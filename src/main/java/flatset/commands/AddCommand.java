@@ -24,7 +24,7 @@ public class AddCommand implements Command {
     public void execute(HashSet<Flat> flatSet, String argument) {
         try {
             if (!argument.startsWith("{") || !argument.endsWith("}")) {
-                throw new IllegalArgumentException("Недопустимый формат. Параметры должны быть заключены в фигурные скобки.");
+                throw new IllegalArgumentException("Invalid format. Parameters must be in curly brackets");
             }
 
             // Убираем внешние скобки
@@ -35,7 +35,7 @@ public class AddCommand implements Command {
             int houseEndIndex = content.lastIndexOf("}");
 
             if (houseStartIndex == -1 || houseEndIndex == -1) {
-                throw new IllegalArgumentException("Недопустимый формат. Должна быть вложенная информация о доме.");
+                throw new IllegalArgumentException("Invalid format. Should include house information.");
             }
 
             // Разделяем аргументы квартиры и дома
@@ -45,7 +45,7 @@ public class AddCommand implements Command {
             // Разбираем параметры квартиры
             String[] flatArgs = flatParams.split(",");
             if (flatArgs.length != 8) {
-                throw new IllegalArgumentException("Недопустимый формат для квартиры. Требуется: name,x,y,area,numberOfRooms,isNew,timeToMetroByTransport,view");
+                throw new IllegalArgumentException("Invalid flat format. Required: name,x,y,area,numberOfRooms,isNew,timeToMetroByTransport,view");
             }
 
             String name = flatArgs[0].trim();
@@ -60,7 +60,7 @@ public class AddCommand implements Command {
             // Разбираем параметры дома
             String[] houseArgs = houseParams.substring(1, houseParams.length() - 1).split(",");
             if (houseArgs.length != 3) {
-                throw new IllegalArgumentException("Недопустимый формат для дома. Требуется: houseName,houseYear,houseNumberOfFlats");
+                throw new IllegalArgumentException("Invalid format for house. Required: houseName,houseYear,houseNumberOfFlats");
             }
 
             String houseName = houseArgs[0].trim();
@@ -86,9 +86,9 @@ public class AddCommand implements Command {
             flat.setHouse(house);  // Устанавливаем дом для квартиры
 
             flatSet.add(flat);
-            System.out.println("Элемент успешно добавлен: " + flat);
+            System.out.println("Element added succesfully: " + flat);
         } catch (Exception e) {
-            System.err.println("Ошибка добавления элемента: " + e.getMessage());
+            System.err.println("Error adding an element: " + e.getMessage());
         }
     }
 

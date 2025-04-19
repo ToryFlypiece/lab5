@@ -28,12 +28,12 @@ public class AddIfMinCommand implements Command {
             // Добавление квартиры, если она меньше минимальной
             if (!minFlat.isPresent() || newFlat.compareTo(minFlat.get()) < 0) {
                 flatSet.add(newFlat);
-                System.out.println("Добавлена новая квартира: " + newFlat);
+                System.out.println("Added new flat: " + newFlat);
             } else {
-                System.out.println("Значение квартиры не меньше минимального в коллекции.");
+                System.out.println("Flat value is not lower than the minimal in the collection.");
             }
         } catch (Exception e) {
-            System.err.println("Ошибка добавления квартиры: " + e.getMessage());
+            System.err.println("Error adding a flat: " + e.getMessage());
         }
     }
 }

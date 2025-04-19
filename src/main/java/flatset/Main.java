@@ -12,7 +12,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("\n=== Flat Collection Manager ===");
-        System.out.println("Введите 'help' чтобы вывести список команда\n");
+        System.out.println("Print 'help' to see the commands list\n");
 
 
 
@@ -26,12 +26,12 @@ public class Main {
                     commandManager.executeCommand(input);
                 }
             } catch (Exception e) {
-                System.err.println("Ошибка: " + e.getMessage());
+                System.err.println("Error: " + e.getMessage());
             }
         }
 
         // Cleanup
         scanner.close();
-        System.out.println("Программа завершена");
+        System.out.println("Program is terminated");
     }
 }

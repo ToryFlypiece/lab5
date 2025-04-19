@@ -31,7 +31,7 @@ public class FlatParser {
             String[] parts = trimmedInput.split(FIELD_SEPARATOR, -1); // Сохраняем пустые строки в конце
             if (parts.length < MIN_FIELDS) {
                 throw new IllegalArgumentException(
-                        String.format("Ожидается не менее %d значений, разделенных запятыми, получено %d",
+                        String.format("Expected at least %d values separated by commas, but got %d",
                                 MIN_FIELDS, parts.length));
             }
 
@@ -40,15 +40,15 @@ public class FlatParser {
             int index = 0;
 
             // Обязательные поля
-            flat.setName(parseString(parts[index++], "название"));
+            flat.setName(parseString(parts[index++], "name"));
             flat.setCoordinates(new Coordinates(
-                    parseInt(parts[index++], "координата x"),
-                    parseInt(parts[index++], "координата y")
+                    parseInt(parts[index++], "coordinate x"),
+                    parseInt(parts[index++], "coordinate y")
             ));
-            flat.setArea(parseLong(parts[index++], "площадь"));
-            flat.setNumberOfRooms(parseLong(parts[index++], "количество комнат"));
-            flat.setNew(parseBoolean(parts[index++], "признак новизны"));
-            flat.setTimeToMetroByTransport(parseDouble(parts[index++], "время до метро"));
+            flat.setArea(parseLong(parts[index++], "area"));
+            flat.setNumberOfRooms(parseLong(parts[index++], "number of rooms"));
+            flat.setNew(parseBoolean(parts[index++], "new flag"));
+            flat.setTimeToMetroByTransport(parseDouble(parts[index++], "time to metro"));
             flat.setView(parseView(parts[index++]));
 
             // Автоматически заполняемые поля
@@ -57,13 +57,13 @@ public class FlatParser {
             // Опциональные поля дома
             if (parts.length > index) {
                 House house = new House();
-                house.setName(parseString(parts[index++], "название дома"));
+                house.setName(parseString(parts[index++], "house name"));
 
                 if (parts.length > index) {
-                    house.setYear(parseInt(parts[index++], "год постройки дома"));
+                    house.setYear(parseInt(parts[index++], "house year"));
                 }
                 if (parts.length > index) {
-                    house.setNumberOfFlatsOnFloor(parseInt(parts[index], "квартир на этаже"));
+                    house.setNumberOfFlatsOnFloor(parseInt(parts[index], "flats per floor"));
                 }
 
                 flat.setHouse(house);
@@ -71,7 +71,7 @@ public class FlatParser {
 
             return flat;
         } catch (Exception e) {
-            throw new IllegalArgumentException("Ошибка парсинга квартиры: " + e.getMessage(), e);
+            throw new IllegalArgumentException("Error parsing apartment: " + e.getMessage(), e);
         }
     }
 
@@ -84,7 +84,7 @@ public class FlatParser {
             JsonObject jsonObject = reader.readObject();
             return parseJsonObject(jsonObject);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Неверный формат JSON: " + e.getMessage(), e);
+            throw new IllegalArgumentException("Invalid JSON format: " + e.getMessage(), e);
         }
     }
 
@@ -128,7 +128,7 @@ public class FlatParser {
     // Вспомогательные методы для парсинга строк
     private static String parseString(String value, String fieldName) {
         if (value == null || value.trim().isEmpty()) {
-            throw new IllegalArgumentException(fieldName + " не может быть пустым");
+            throw new IllegalArgumentException(fieldName + " cannot be empty");
         }
         return value.trim();
     }
@@ -137,7 +137,7 @@ public class FlatParser {
         try {
             return Integer.parseInt(value.trim());
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Некорректное значение " + fieldName + ": " + value);
+            throw new IllegalArgumentException("Invalid value for " + fieldName + ": " + value);
         }
     }
 
@@ -145,7 +145,7 @@ public class FlatParser {
         try {
             return Long.parseLong(value.trim());
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Некорректное значение " + fieldName + ": " + value);
+            throw new IllegalArgumentException("Invalid value for " + fieldName + ": " + value);
         }
     }
 
@@ -153,13 +153,13 @@ public class FlatParser {
         try {
             return Double.parseDouble(value.trim());
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Некорректное значение " + fieldName + ": " + value);
+            throw new IllegalArgumentException("Invalid value for " + fieldName + ": " + value);
         }
     }
 
     private static boolean parseBoolean(String value, String fieldName) {
         if (!value.trim().equalsIgnoreCase("true") && !value.trim().equalsIgnoreCase("false")) {
-            throw new IllegalArgumentException("Некорректное значение " + fieldName + ": должно быть 'true' или 'false'");
+            throw new IllegalArgumentException("Invalid value for " + fieldName + ": must be 'true' or 'false'");
         }
         return Boolean.parseBoolean(value.trim());
     }
@@ -168,29 +168,29 @@ public class FlatParser {
         try {
             return View.valueOf(value.trim().toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Некорректный вид: " + value +
-                    ". Допустимые варианты: " + Arrays.toString(View.values()));
+            throw new IllegalArgumentException("Invalid view: " + value +
+                    ". Valid options: " + Arrays.toString(View.values()));
         }
     }
 
     // Вспомогательные методы для парсинга JSON
     private static String getJsonString(JsonObject json, String field) {
         if (!json.containsKey(field)) {
-            throw new IllegalArgumentException("Отсутствует обязательное поле: " + field);
+            throw new IllegalArgumentException("Missing mandatory field: " + field);
         }
         return json.getString(field);
     }
 
     private static int getJsonInt(JsonObject json, String field) {
         if (!json.containsKey(field)) {
-            throw new IllegalArgumentException("Отсутствует обязательное поле: " + field);
+            throw new IllegalArgumentException("Missing mandatory field: " + field);
         }
         return json.getInt(field);
     }
 
     private static long getJsonLong(JsonObject json, String field) {
         if (!json.containsKey(field)) {
-            throw new IllegalArgumentException("Отсутствует обязательное поле: " + field);
+            throw new IllegalArgumentException("Missing mandatory field: " + field);
         }
         return json.getInt(field);
     }

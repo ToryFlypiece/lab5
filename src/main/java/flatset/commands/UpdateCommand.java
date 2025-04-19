@@ -24,7 +24,7 @@ public class UpdateCommand implements Command {
             // Разделяем аргумент на ID и новые данные для квартиры
             String[] parts = argument.split(" ", 2);
             if (parts.length != 2) {
-                throw new IllegalArgumentException("Использование: update id {flat_data}");
+                throw new IllegalArgumentException("Usage: update id {flat_data}");
             }
 
             long id = Long.parseLong(parts[0]);
@@ -40,13 +40,13 @@ public class UpdateCommand implements Command {
             if (existing.isPresent()) {
                 flatSet.remove(existing.get());
                 flatSet.add(updatedFlat);
-                System.out.println("Обновлены квартира с ID " + id);
+                System.out.println("Updated apartment with ID " + id);
             } else {
-                System.out.println("Не найдена квартира с ID " + id);
+                System.out.println("Apartment with ID " + id + " not found.");
             }
         } catch (Exception e) {
             // Выводим ошибку, если что-то пошло не так
-            System.err.println("Ошибка обновления: " + e.getMessage());
+            System.err.println("Error updating: " + e.getMessage());
         }
     }
 }

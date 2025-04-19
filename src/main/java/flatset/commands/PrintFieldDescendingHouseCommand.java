@@ -30,13 +30,13 @@ public class PrintFieldDescendingHouseCommand implements Command {
                 .collect(Collectors.toList());
 
         if (houses.isEmpty()) {
-            System.out.println("В коллекции нет домов.");
+            System.out.println("There are no houses in the collection.");
             return;
         }
 
-        System.out.println("=== Дома (в порядке убывания) ===");
+        System.out.println("=== Houses (in descending order) ===");
         houses.forEach(house ->
-                System.out.printf("- %s (Год: %d, Квартир/этажей: %d)%n",
+                System.out.printf("- %s (Year: %d, Flats/Floors: %d)%n",
                         house.getName(),
                         house.getYear(),
                         house.getNumberOfFlatsOnFloor())

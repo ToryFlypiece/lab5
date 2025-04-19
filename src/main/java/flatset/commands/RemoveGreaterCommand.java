@@ -28,9 +28,9 @@ public class RemoveGreaterCommand implements Command {
 
             // Подсчёт количества удалённых квартир
             int removedCount = initialSize - flatSet.size();
-            System.out.println("Удалено " + removedCount + " квартир со значениями выше заданного.");
+            System.out.println("Removed " + removedCount + " apartments with values greater than the given one.");
         } catch (Exception e) {
-            System.err.println("Ошибка удаления квартир: " + e.getMessage());
+            System.err.println("Error deleting apartments: " + e.getMessage());
         }
     }
 }

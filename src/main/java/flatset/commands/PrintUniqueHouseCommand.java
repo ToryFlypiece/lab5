@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Команда для вывода уникальных домов, указанных в квартирах коллекции.
+ * Команда для вывода уникальных домов, указанных в квартиках коллекции.
  */
 public class PrintUniqueHouseCommand implements Command {
 
@@ -27,13 +27,13 @@ public class PrintUniqueHouseCommand implements Command {
                 .collect(Collectors.toSet());
 
         if (uniqueHouses.isEmpty()) {
-            System.out.println("В коллекции нет домов.");
+            System.out.println("There are no houses in the collection.");
             return;
         }
 
-        System.out.println("=== Уникальные дома ===");
+        System.out.println("=== Unique Houses ===");
         uniqueHouses.forEach(house ->
-                System.out.printf("- %s (Год: %d, Квартир/этажей: %d)%n",
+                System.out.printf("- %s (Year: %d, Flats/Floors: %d)%n",
                         house.getName(),
                         house.getYear(),
                         house.getNumberOfFlatsOnFloor())

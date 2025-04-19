@@ -28,12 +28,12 @@ public class AddIfMaxCommand implements Command {
             // Добавление квартиры, если она больше максимальной
             if (!maxFlat.isPresent() || newFlat.compareTo(maxFlat.get()) > 0) {
                 flatSet.add(newFlat);
-                System.out.println("Добавлена новая квартира: " + newFlat);
+                System.out.println("Added new flat: " + newFlat);
             } else {
-                System.out.println("Значение квартиры не больше максимального в коллекции.");
+                System.out.println("Flat value is lower than the maximum in the collection.");
             }
         } catch (Exception e) {
-            System.err.println("Ошибка добавления квартиры: " + e.getMessage());
+            System.err.println("Error adding a flat: " + e.getMessage());
         }
     }
 }
