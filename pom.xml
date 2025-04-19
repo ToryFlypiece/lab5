@@ -60,7 +60,12 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
-                </configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>flatset.Main</mainClass>
+                        </manifest>
+                    </archive>
+configuration>
             </plugin>
         </plugins>
     </build>
