@@ -25,13 +25,11 @@ public class UpdateCommand implements Command {
             Flat updatedFlat;
 
             if (argument == null || argument.trim().isEmpty()) {
-                // Interactive mode - ask for ID first
                 System.out.print("Enter ID of the flat to update: ");
                 String idInput = scanner.nextLine().trim();
                 id = Long.parseLong(idInput);
                 updatedFlat = promptForFlatData();
             } else {
-                // update <id> {flat_data}
                 String[] parts = argument.trim().split(" ", 2);
                 if (parts.length != 2) {
                     throw new IllegalArgumentException("Usage: update <id> {flat_data} or just 'update' for interactive mode.");
@@ -62,23 +60,23 @@ public class UpdateCommand implements Command {
         System.out.println("\nUpdating flat (interactive mode)");
         System.out.println("---------------------------------");
 
-        String name = prompt("Enter flat name: ");
-        int x = Integer.parseInt(prompt("Enter coordinate X (integer): "));
-        int y = Integer.parseInt(prompt("Enter coordinate Y (integer): "));
-        long area = Long.parseLong(prompt("Enter area (long): "));
-        long numberOfRooms = Long.parseLong(prompt("Enter number of rooms (long): "));
-        Boolean isNew = Boolean.parseBoolean(prompt("Is it new? (true/false): "));
-        double timeToMetroByTransport = Double.parseDouble(prompt("Enter time to metro by transport (double): "));
+        String name = prompt("Enter flat name: ", false);
+        int x = promptInt("Enter coordinate X (integer): ");
+        int y = promptInt("Enter coordinate Y (integer): ");
+        long area = promptPositiveLong("Enter area (positive long): ");
+        long numberOfRooms = promptPositiveLong("Enter number of rooms (positive long): ");
+        Boolean isNew = promptBoolean("Is it new? (true/false): ");
+        double timeToMetroByTransport = promptNonNegativeDouble("Enter time to metro by transport (non-negative double): ");
         System.out.println("Available views: " + java.util.Arrays.toString(View.values()));
-        View view = View.valueOf(prompt("Enter view: ").toUpperCase());
+        View view = promptView("Enter view: ");
 
         System.out.println("\nEnter house details:");
-        String houseName = prompt("House name: ");
-        int houseYear = Integer.parseInt(prompt("House year (integer): "));
-        int houseNumberOfFlats = Integer.parseInt(prompt("Number of flats in house (integer): "));
+        String houseName = prompt("House name: ", false);
+        int houseYear = promptPositiveInt("House year (positive integer): ");
+        int houseNumberOfFlats = promptPositiveInt("Number of flats in house (positive integer): ");
 
-        House house = new House(houseName, houseYear, houseNumberOfFlats);
         Coordinates coordinates = new Coordinates(x, y);
+        House house = new House(houseName, houseYear, houseNumberOfFlats);
 
         Flat flat = new Flat();
         flat.setName(name);
@@ -94,18 +92,79 @@ public class UpdateCommand implements Command {
         return flat;
     }
 
-    private String prompt(String message) {
+    private String prompt(String message, boolean allowEmpty) {
         while (true) {
             System.out.print(message);
             try {
                 String input = scanner.nextLine().trim();
-                if (input.isEmpty()) {
-                    System.out.println("This field cannot be empty.");
+                if (!allowEmpty && input.isEmpty()) {
+                    System.out.println("This field cannot be empty. Please try again.");
                     continue;
                 }
                 return input;
             } catch (Exception e) {
-                System.out.println("Invalid input. Try again.");
+                System.out.println("Invalid input. Please try again.");
+            }
+        }
+    }
+
+    private int promptInt(String message) {
+        while (true) {
+            try {
+                return Integer.parseInt(prompt(message, false));
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid integer. Try again.");
+            }
+        }
+    }
+
+    private int promptPositiveInt(String message) {
+        while (true) {
+            int value = promptInt(message);
+            if (value > 0) return value;
+            System.out.println("Value must be positive. Try again.");
+        }
+    }
+
+    private long promptPositiveLong(String message) {
+        while (true) {
+            try {
+                long value = Long.parseLong(prompt(message, false));
+                if (value > 0) return value;
+                System.out.println("Value must be positive. Try again.");
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid long. Try again.");
+            }
+        }
+    }
+
+    private double promptNonNegativeDouble(String message) {
+        while (true) {
+            try {
+                double value = Double.parseDouble(prompt(message, false));
+                if (value >= 0) return value;
+                System.out.println("Value must be non-negative. Try again.");
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid double. Try again.");
+            }
+        }
+    }
+
+    private Boolean promptBoolean(String message) {
+        while (true) {
+            String input = prompt(message, false).toLowerCase();
+            if (input.equals("true")) return true;
+            if (input.equals("false")) return false;
+            System.out.println("Invalid value. Enter 'true' or 'false'.");
+        }
+    }
+
+    private View promptView(String message) {
+        while (true) {
+            try {
+                return View.valueOf(prompt(message, false).toUpperCase());
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid view. Options: " + java.util.Arrays.toString(View.values()));
             }
         }
     }

@@ -22,7 +22,6 @@ public class UpdateByIdCommand implements Command {
     @Override
     public void execute(HashSet<Flat> flatSet, String argument) {
         try {
-            // Разделяем аргумент на ID и данные для обновления
             String[] parts = argument.split(" ", 2);
             if (parts.length != 2) {
                 throw new IllegalArgumentException("Usage: update_by_id id {field:value}");
