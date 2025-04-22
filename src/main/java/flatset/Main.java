@@ -16,19 +16,15 @@ public class Main {
         System.out.println("\n=== Flat Collection Manager ===");
         System.out.println("Print 'help' to see the commands list\n");
 
-
-
-        // Main command loop
         while (commandManager.isRunning()) {
-            try {
-                System.out.print("> ");
-                String input = scanner.nextLine().trim();
-
-                if (!input.isEmpty()) {
-                    commandManager.executeCommand(input);
-                }
-            } catch (Exception e) {
-                System.err.println("Error: " + e.getMessage());
+            System.out.print("> ");
+            if (!scanner.hasNextLine()) {
+                System.out.println("\nEOF: Exiting");
+                break;
+            }
+            String input = scanner.nextLine().trim();
+            if (!input.isEmpty()) {
+                commandManager.executeCommand(input);
             }
         }
 
