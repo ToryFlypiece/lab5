@@ -8,6 +8,8 @@ import flatset.House;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Scanner;
+import java.util.NoSuchElementException;
+
 
 /**
  * Команда для добавления нового элемента в коллекцию квартир.
@@ -135,6 +137,9 @@ public class AddCommand implements Command {
                     continue;
                 }
                 return input;
+            } catch (NoSuchElementException e) {
+                System.out.println("\nEOF detected. Exiting program.");
+                System.exit(0);
             } catch (Exception e) {
                 System.out.println("Invalid input. Please try again.");
             }

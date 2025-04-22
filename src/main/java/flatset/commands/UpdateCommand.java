@@ -5,6 +5,7 @@ import flatset.Flat;
 import flatset.House;
 import flatset.View;
 
+import java.util.NoSuchElementException;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Optional;
@@ -109,6 +110,9 @@ public class UpdateCommand implements Command {
                     continue;
                 }
                 return input;
+            } catch (NoSuchElementException e) {
+                System.out.println("\nEOF detected. Exiting program.");
+                System.exit(0);
             } catch (Exception e) {
                 System.out.println("Invalid input. Please try again.");
             }
