@@ -19,13 +19,10 @@ public class AddIfMinCommand implements Command {
     @Override
     public void execute(HashSet<Flat> flatSet, String argument) {
         try {
-            // Парсинг новой квартиры из аргументов
             Flat newFlat = FlatParser.parseFlat(argument);
 
-            // Поиск квартиры с минимальным значением
             Optional<Flat> minFlat = flatSet.stream().min(Flat::compareTo);
 
-            // Добавление квартиры, если она меньше минимальной
             if (!minFlat.isPresent() || newFlat.compareTo(minFlat.get()) < 0) {
                 flatSet.add(newFlat);
                 System.out.println("Added new flat: " + newFlat);

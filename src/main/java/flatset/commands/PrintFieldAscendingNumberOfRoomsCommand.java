@@ -22,7 +22,6 @@ public class PrintFieldAscendingNumberOfRoomsCommand implements Command {
      */
     @Override
     public void execute(HashSet<Flat> flatSet, String argument) {
-        // Создаём Map, где ключ - это количество комнат, а значение - список квартир с этим количеством комнат
         Map<Long, List<Flat>> flatsByRooms = flatSet.stream()
                 .collect(Collectors.groupingBy(Flat::getNumberOfRooms));
 
@@ -33,16 +32,13 @@ public class PrintFieldAscendingNumberOfRoomsCommand implements Command {
 
         System.out.println("=== Number of Rooms (In Ascending Order) ===");
 
-        // Сортируем по количеству комнат
         flatsByRooms.keySet().stream()
                 .sorted()
                 .forEach(rooms -> {
-                    // Для каждого количества комнат выводим соответствующие ID квартир
                     System.out.print("- " + rooms + " room" +
                             (rooms % 10 == 1 && rooms % 100 != 11 ? "s" :
                                     (rooms % 10 >= 2 && rooms % 10 <= 4 && (rooms % 100 < 10 || rooms % 100 >= 20) ? "s" : "")));
 
-                    // Выводим ID квартир с данным количеством комнат
                     List<Flat> flats = flatsByRooms.get(rooms);
                     System.out.print(": ");
                     for (int i = 0; i < flats.size(); i++) {

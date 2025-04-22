@@ -20,7 +20,6 @@ public class PrintUniqueHouseCommand implements Command {
      */
     @Override
     public void execute(HashSet<Flat> flatSet, String argument) {
-        // Сбор уникальных домов из коллекции квартир
         Set<House> uniqueHouses = flatSet.stream()
                 .map(Flat::getHouse)
                 .filter(house -> house != null)

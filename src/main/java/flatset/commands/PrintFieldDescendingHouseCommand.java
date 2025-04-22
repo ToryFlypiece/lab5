@@ -22,7 +22,6 @@ public class PrintFieldDescendingHouseCommand implements Command {
      */
     @Override
     public void execute(HashSet<Flat> flatSet, String argument) {
-        // Извлекаем дома, сортируем в порядке убывания и собираем в список
         List<House> houses = flatSet.stream()
                 .map(Flat::getHouse)
                 .filter(house -> house != null)

@@ -30,12 +30,10 @@ public class UpdateByIdCommand implements Command {
             long id = Long.parseLong(parts[0]);
             String jsonData = parts[1];
 
-            // Ищем квартиру по ID
             Optional<Flat> toUpdate = flatSet.stream()
                     .filter(f -> f.getId() == id)
                     .findFirst();
 
-            // Если квартира найдена, обновляем ее поля
             if (toUpdate.isPresent()) {
                 FlatUpdater.updateFields(toUpdate.get(), jsonData);
                 System.out.println("Updated fields of apartment with ID " + id);
@@ -43,7 +41,6 @@ public class UpdateByIdCommand implements Command {
                 System.out.println("Apartment with ID " + id + " not found.");
             }
         } catch (Exception e) {
-            // Выводим ошибку, если что-то пошло не так
             System.err.println("Error updating: " + e.getMessage());
         }
     }

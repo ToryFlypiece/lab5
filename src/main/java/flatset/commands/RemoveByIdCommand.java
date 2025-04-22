@@ -18,15 +18,12 @@ public class RemoveByIdCommand implements Command {
     @Override
     public void execute(HashSet<Flat> flatSet, String argument) {
         try {
-            // Проверка на пустой или неверный аргумент
             if (argument == null || argument.trim().isEmpty()) {
                 System.out.println("Error: ID is not defined. Usage: remove_by_id <id>");
                 return;
             }
 
-            // Преобразование аргумента в число
             long id = Long.parseLong(argument.trim());
-            // Удаление квартиры с соответствующим ID
             boolean removed = flatSet.removeIf(flat -> flat.getId() == id);
 
             if (removed) {

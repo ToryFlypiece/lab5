@@ -21,7 +21,6 @@ public class ShowCommand implements Command {
             System.out.println("Collection is empty.");
         } else {
             System.out.println("Elements of the collection:");
-            // Вывод всех квартир в коллекции
             for (Flat flat : flatSet) {
                 System.out.println(flat);
             }

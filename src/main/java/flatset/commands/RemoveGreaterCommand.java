@@ -19,14 +19,11 @@ public class RemoveGreaterCommand implements Command {
     @Override
     public void execute(HashSet<Flat> flatSet, String argument) {
         try {
-            // Парсинг квартиры для сравнения
             Flat comparisonFlat = FlatParser.parseFlat(argument);
             int initialSize = flatSet.size();
 
-            // Удаление квартир с значениями больше заданной квартиры
             flatSet.removeIf(flat -> flat.compareTo(comparisonFlat) > 0);
 
-            // Подсчёт количества удалённых квартир
             int removedCount = initialSize - flatSet.size();
             System.out.println("Removed " + removedCount + " apartments with values greater than the given one.");
         } catch (Exception e) {

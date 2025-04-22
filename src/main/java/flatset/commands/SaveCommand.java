@@ -23,7 +23,6 @@ public class SaveCommand implements Command {
      */
     @Override
     public void execute(HashSet<Flat> flatSet, String argument) {
-        // Определение имени файла для сохранения данных
         String filename = argument.isEmpty() ? DEFAULT_FILENAME : argument.trim();
 
         try (FileOutputStream fos = new FileOutputStream(filename);
@@ -31,7 +30,6 @@ public class SaveCommand implements Command {
 
             JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
 
-            // Процесс формирования JSON для каждой квартиры
             for (Flat flat : flatSet) {
                 JsonObjectBuilder objectBuilder = Json.createObjectBuilder()
                         .add("id", flat.getId())
@@ -43,12 +41,10 @@ public class SaveCommand implements Command {
                         .add("view", flat.getView().toString())
                         .add("creationDate", flat.getCreationDate().toString());
 
-                // Добавление координат квартиры
                 objectBuilder.add("coordinates", Json.createObjectBuilder()
                         .add("x", flat.getCoordinates().getX())
                         .add("y", flat.getCoordinates().getY()));
 
-                // Добавление информации о доме, если он существует
                 if (flat.getHouse() != null) {
                     objectBuilder.add("house", Json.createObjectBuilder()
                             .add("name", flat.getHouse().getName())
@@ -59,7 +55,6 @@ public class SaveCommand implements Command {
                 arrayBuilder.add(objectBuilder);
             }
 
-            // Запись собранного JSON в файл
             jsonWriter.writeArray(arrayBuilder.build());
             System.out.println("Successfully saved " + flatSet.size() + " apartment(s) to " + filename);
 

@@ -27,7 +27,6 @@ public class CommandManager {
      * Инициализирует все доступные команды
      */
     private void initializeCommands() {
-        // Базовые операции с коллекцией
         registerCommand("help", new HelpCommand());
         registerCommand("info", new InfoCommand());
         registerCommand("show", new ShowCommand());

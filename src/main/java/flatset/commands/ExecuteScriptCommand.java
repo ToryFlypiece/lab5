@@ -21,14 +21,11 @@ public class ExecuteScriptCommand implements Command {
     @Override
     public void execute(HashSet<Flat> flatSet, String argument) {
         try {
-            // Чтение всех строк из файла
             List<String> lines = Files.readAllLines(Paths.get(argument));
 
-            // Создание временного менеджера команд для выполнения скрипта
             CommandManager tempManager = new CommandManager(flatSet);
 
             for (String line : lines) {
-                // Пропуск пустых строк и комментариев
                 if (line.trim().isEmpty() || line.startsWith("#")) {
                     continue;
                 }
@@ -39,7 +36,6 @@ public class ExecuteScriptCommand implements Command {
                 } catch (Exception e) {
                     System.err.println("Error executing the command: " + line);
                     System.err.println("Error: " + e.getMessage());
-                    // Продолжаем выполнение следующих команд
                 }
             }
         } catch (Exception e) {
