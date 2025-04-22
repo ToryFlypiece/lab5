@@ -28,7 +28,6 @@ public class Main {
             }
         }
 
-        // Cleanup
         scanner.close();
         System.out.println("Program is terminated");
     }

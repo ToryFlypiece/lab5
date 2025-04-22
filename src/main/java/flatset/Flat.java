@@ -89,7 +89,6 @@ public class Flat implements Comparable<Flat>
         this.house = house;
     }
 
-    // Геттеры и сеттеры
     /**
      * Возвращает уникальный идентификатор квартиры.
 

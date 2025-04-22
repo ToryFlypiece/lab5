@@ -10,6 +10,13 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Scanner;
 
+/**
+ * Команда для добавления нового элемента в коллекцию квартир.
+ * Поддерживает два режима:
+ * 1. Аргументный режим: все параметры передаются одной строкой
+ * 2. Интерактивный режим: запрашивает параметры по одному
+ */
+
 public class UpdateCommand implements Command {
 
     private final Scanner scanner;
