@@ -9,7 +9,6 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-
 public class Main {
     public static void main(String[] args) {
         Set<Flat> flatSet = ConcurrentHashMap.newKeySet();
@@ -28,6 +27,7 @@ public class Main {
                 if (choice.equals("e")) {
                     System.out.println("Exiting program.");
                     scanner.close();
+                    CommandManager.shutdownPools();
                     System.exit(0);
                 }
 
@@ -54,7 +54,7 @@ public class Main {
                 }
             }
 
-            CommandManager commandManager = new CommandManager(flatSet, currentUser);
+            CommandManager commandManager = new CommandManager(flatSet, currentUser, scanner);
 
             System.out.println("Print 'help' to see the commands list\n");
 
@@ -63,6 +63,7 @@ public class Main {
                 if (!scanner.hasNextLine()) {
                     System.out.println("\nEOF: Exiting");
                     scanner.close();
+                    CommandManager.shutdownPools();
                     System.exit(0);
                 }
                 String input = scanner.nextLine().trim();

@@ -5,21 +5,24 @@ import flatset.auth.User;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Set;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Команда для выполнения скрипта из файла.
  */
-public class ExecuteScriptCommand implements Command {
+public class ExecuteScriptCommand implements InteractiveCommand {
     private final User currentUser;
+    private final ExecutorService responsePool;
 
-    public ExecuteScriptCommand(User user) {
+    public ExecuteScriptCommand(User user, ExecutorService responsePool) {
         this.currentUser = user;
+        this.responsePool = responsePool;
     }
 
     @Override
-    public void execute(Set<Flat> flatSet, String argument, User currentUser) {
+    public void execute(Set<Flat> flatSet, String argument, User currentUser, Scanner scanner) {
         if (argument == null || argument.isEmpty()) {
             System.out.println("Файл скрипта не указан.");
             return;
@@ -32,7 +35,7 @@ public class ExecuteScriptCommand implements Command {
         }
 
         try (Scanner fileScanner = new Scanner(scriptFile)) {
-            CommandManager tempCommandManager = new CommandManager(flatSet, currentUser);
+            CommandManager tempCommandManager = new CommandManager(flatSet, currentUser, fileScanner);
 
             while (fileScanner.hasNextLine()) {
                 String line = fileScanner.nextLine().trim();
@@ -45,5 +48,9 @@ public class ExecuteScriptCommand implements Command {
         } catch (FileNotFoundException e) {
             System.out.println("Ошибка при открытии файла: " + e.getMessage());
         }
+    }
+
+    @Override
+    public void execute(Set<Flat> flatSet, String argument, User currentUser) {
     }
 }

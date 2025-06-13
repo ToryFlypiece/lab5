@@ -5,25 +5,21 @@ import flatset.auth.User;
 
 import java.sql.*;
 import java.time.ZonedDateTime;
-import java.util.Set;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
+import java.util.Set;
 
-public class AddCommand implements Command {
-    private final Scanner scanner;
+public class AddCommand implements InteractiveCommand {
 
     private static final String DB_URL = "jdbc:postgresql://localhost:5432/flatset";
     private static final String DB_USER = "postgres";
     private static final String DB_PASSWORD = "admin";
 
-    public AddCommand() {
-        this.scanner = new Scanner(System.in);
-    }
-
-    public void execute(Set<Flat> flatSet, String argument, User currentUser) {
+    @Override
+    public void execute(Set<Flat> flatSet, String argument, User currentUser, Scanner scanner) {
         try {
             if (argument == null || argument.trim().isEmpty()) {
-                addInteractive(flatSet, currentUser);
+                addInteractive(flatSet, currentUser, scanner);
             } else {
                 addFromArgument(flatSet, argument, currentUser);
             }
@@ -32,6 +28,10 @@ public class AddCommand implements Command {
         } catch (Exception e) {
             System.err.println("Error adding an element: " + e.getMessage());
         }
+    }
+
+    public void execute(Set<Flat> flatSet, String argument, User currentUser) {
+        throw new UnsupportedOperationException("Use execute with Scanner");
     }
 
     private void addFromArgument(Set<Flat> flatSet, String argument, User currentUser) throws SQLException {
@@ -100,26 +100,26 @@ public class AddCommand implements Command {
         addFlatToDbAndMemory(flatSet, name, x, y, area, numberOfRooms, isNew, timeToMetroByTransport, view, house, currentUser);
     }
 
-    private void addInteractive(Set<Flat> flatSet, User currentUser) throws SQLException {
+    private void addInteractive(Set<Flat> flatSet, User currentUser, Scanner scanner) throws SQLException {
         System.out.println("\nAdding new flat (interactive mode)");
         System.out.println("---------------------------------");
 
-        String name = prompt("Enter flat name: ", false);
-        int x = promptInt("Enter coordinate X (integer): ");
-        int y = promptInt("Enter coordinate Y (integer): ");
+        String name = prompt(scanner, "Enter flat name: ", false);
+        int x = promptInt(scanner, "Enter coordinate X (integer): ");
+        int y = promptInt(scanner, "Enter coordinate Y (integer): ");
 
-        long area = promptPositiveLong("Enter area (positive long): ");
-        long numberOfRooms = promptPositiveLong("Enter number of rooms (positive long): ");
-        Boolean isNew = promptBoolean("Is it new? (true/false): ");
-        double timeToMetroByTransport = promptNonNegativeDouble("Enter time to metro by transport (non-negative double): ");
+        long area = promptPositiveLong(scanner, "Enter area (positive long): ");
+        long numberOfRooms = promptPositiveLong(scanner, "Enter number of rooms (positive long): ");
+        Boolean isNew = promptBoolean(scanner, "Is it new? (true/false): ");
+        double timeToMetroByTransport = promptNonNegativeDouble(scanner, "Enter time to metro by transport (non-negative double): ");
 
         System.out.println("Available views: " + java.util.Arrays.toString(View.values()));
-        View view = promptView("Enter view: ");
+        View view = promptView(scanner, "Enter view: ");
 
         System.out.println("\nEnter house details:");
-        String houseName = prompt("House name: ", false);
-        int houseYear = promptPositiveInt("House year (positive integer): ");
-        int houseNumberOfFlats = promptPositiveInt("Number of flats in house (positive integer): ");
+        String houseName = prompt(scanner, "House name: ", false);
+        int houseYear = promptPositiveInt(scanner, "House year (positive integer): ");
+        int houseNumberOfFlats = promptPositiveInt(scanner, "Number of flats in house (positive integer): ");
 
         House house = new House(houseName, houseYear, houseNumberOfFlats);
 
@@ -206,9 +206,9 @@ public class AddCommand implements Command {
         }
     }
 
-    // Prompt utilities
+    // Prompt utilities с передачей Scanner
 
-    private String prompt(String message, boolean allowEmpty) {
+    private String prompt(Scanner scanner, String message, boolean allowEmpty) {
         while (true) {
             System.out.print(message);
             try {
@@ -227,63 +227,65 @@ public class AddCommand implements Command {
         }
     }
 
-    private int promptInt(String message) {
+    private int promptInt(Scanner scanner, String message) {
         while (true) {
             try {
-                return Integer.parseInt(prompt(message, false));
+                return Integer.parseInt(prompt(scanner, message, false));
             } catch (NumberFormatException e) {
                 System.out.println("Invalid integer. Try again.");
             }
         }
     }
 
-    private int promptPositiveInt(String message) {
+    private int promptPositiveInt(Scanner scanner, String message) {
         while (true) {
-            int value = promptInt(message);
+            int value = promptInt(scanner, message);
             if (value > 0) return value;
             System.out.println("Value must be positive. Try again.");
         }
     }
 
-    private long promptPositiveLong(String message) {
+    private long promptPositiveLong(Scanner scanner, String message) {
         while (true) {
             try {
-                long value = Long.parseLong(prompt(message, false));
+                long value = Long.parseLong(prompt(scanner, message, false));
                 if (value > 0) return value;
                 System.out.println("Value must be positive. Try again.");
             } catch (NumberFormatException e) {
-                System.out.println("Invalid long. Try again.");
+                System.out.println("Invalid long integer. Try again.");
             }
         }
     }
 
-    private double promptNonNegativeDouble(String message) {
+    private double promptNonNegativeDouble(Scanner scanner, String message) {
         while (true) {
             try {
-                double value = Double.parseDouble(prompt(message, false));
+                double value = Double.parseDouble(prompt(scanner, message, false));
                 if (value >= 0) return value;
                 System.out.println("Value must be non-negative. Try again.");
             } catch (NumberFormatException e) {
-                System.out.println("Invalid double. Try again.");
+                System.out.println("Invalid number. Try again.");
             }
         }
     }
 
-    private Boolean promptBoolean(String message) {
+    private Boolean promptBoolean(Scanner scanner, String message) {
         while (true) {
-            String input = prompt(message, false).toLowerCase();
-            if (input.equals("true")) return true;
-            if (input.equals("false")) return false;
-            System.out.println("Invalid value. Enter 'true' or 'false'.");
+            String input = prompt(scanner, message, false).toLowerCase();
+            if (input.equals("true") || input.equals("false")) {
+                return Boolean.parseBoolean(input);
+            }
+            System.out.println("Input must be true or false. Try again.");
         }
     }
 
-    private View promptView(String message) {
+    private View promptView(Scanner scanner, String message) {
         while (true) {
+            String input = prompt(scanner, message, false).toUpperCase();
             try {
-                return View.valueOf(prompt(message, false).toUpperCase());
+                return View.valueOf(input);
             } catch (IllegalArgumentException e) {
-                System.out.println("Invalid view. Options: " + java.util.Arrays.toString(View.values()));
+                System.out.println("Invalid view. Available options: " + java.util.Arrays.toString(View.values()));
             }
         }
     }
