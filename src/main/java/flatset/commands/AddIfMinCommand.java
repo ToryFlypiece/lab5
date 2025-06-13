@@ -1,6 +1,7 @@
 package flatset.commands;
 
 import flatset.Flat;
+import flatset.auth.User;
 import flatset.utils.FlatParser;
 import java.util.HashSet;
 import java.util.Optional;
@@ -17,7 +18,7 @@ public class AddIfMinCommand implements Command {
      * @param argument Строка, содержащая параметры новой квартиры в ожидаемом формате для {@link FlatParser}.
      */
     @Override
-    public void execute(HashSet<Flat> flatSet, String argument) {
+    public void execute(HashSet<Flat> flatSet, String argument, User currentUser) {
         try {
             Flat newFlat = FlatParser.parseFlat(argument);
 

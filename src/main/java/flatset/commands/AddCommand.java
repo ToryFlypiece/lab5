@@ -1,43 +1,40 @@
 package flatset.commands;
 
-import flatset.Coordinates;
-import flatset.Flat;
-import flatset.View;
-import flatset.House;
+import flatset.*;
+import flatset.auth.User;
 
+import java.sql.*;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
-import java.util.Scanner;
 import java.util.NoSuchElementException;
+import java.util.Scanner;
 
-
-/**
- * Команда для добавления нового элемента в коллекцию квартир.
- * Поддерживает два режима:
- * 1. Аргументный режим: все параметры передаются одной строкой
- * 2. Интерактивный режим: запрашивает параметры по одному
- */
 public class AddCommand implements Command {
     private final Scanner scanner;
+
+    private static final String DB_URL = "jdbc:postgresql://localhost:5432/flatset";
+    private static final String DB_USER = "postgres";
+    private static final String DB_PASSWORD = "admin";
 
     public AddCommand() {
         this.scanner = new Scanner(System.in);
     }
 
-    @Override
-    public void execute(HashSet<Flat> flatSet, String argument) {
+    public void execute(HashSet<Flat> flatSet, String argument, User currentUser) {
         try {
             if (argument == null || argument.trim().isEmpty()) {
-                addInteractive(flatSet);
+                addInteractive(flatSet, currentUser);
             } else {
-                addFromArgument(flatSet, argument);
+                addFromArgument(flatSet, argument, currentUser);
             }
+        } catch (IllegalArgumentException e) {
+            System.err.println("Input error: " + e.getMessage());
         } catch (Exception e) {
             System.err.println("Error adding an element: " + e.getMessage());
         }
     }
 
-    private void addFromArgument(HashSet<Flat> flatSet, String argument) {
+    private void addFromArgument(HashSet<Flat> flatSet, String argument, User currentUser) throws SQLException {
         if (!argument.startsWith("{") || !argument.endsWith("}")) {
             throw new IllegalArgumentException("Invalid format. Parameters must be in curly brackets");
         }
@@ -99,10 +96,11 @@ public class AddCommand implements Command {
         if (houseNumberOfFlats <= 0) throw new IllegalArgumentException("Number of flats in house must be positive");
 
         House house = new House(houseName, houseYear, houseNumberOfFlats);
-        addFlat(flatSet, name, x, y, area, numberOfRooms, isNew, timeToMetroByTransport, view, house);
+
+        addFlatToDbAndMemory(flatSet, name, x, y, area, numberOfRooms, isNew, timeToMetroByTransport, view, house, currentUser);
     }
 
-    private void addInteractive(HashSet<Flat> flatSet) {
+    private void addInteractive(HashSet<Flat> flatSet, User currentUser) throws SQLException {
         System.out.println("\nAdding new flat (interactive mode)");
         System.out.println("---------------------------------");
 
@@ -124,8 +122,90 @@ public class AddCommand implements Command {
         int houseNumberOfFlats = promptPositiveInt("Number of flats in house (positive integer): ");
 
         House house = new House(houseName, houseYear, houseNumberOfFlats);
-        addFlat(flatSet, name, x, y, area, numberOfRooms, isNew, timeToMetroByTransport, view, house);
+
+        addFlatToDbAndMemory(flatSet, name, x, y, area, numberOfRooms, isNew, timeToMetroByTransport, view, house, currentUser);
     }
+
+    private void addFlatToDbAndMemory(HashSet<Flat> flatSet, String name, int x, int y, long area,
+                                      long numberOfRooms, Boolean isNew, double timeToMetroByTransport,
+                                      View view, House house, User currentUser) throws SQLException {
+        ZonedDateTime creationDate = ZonedDateTime.now();
+        Coordinates coordinates = new Coordinates(x, y);
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
+            conn.setAutoCommit(false);
+
+            Integer houseId = null;
+            if (house != null) {
+                String houseSQL = "INSERT INTO houses (name, year, number_of_flats_on_floor) " +
+                        "VALUES (?, ?, ?) RETURNING id";
+                try (PreparedStatement houseStmt = conn.prepareStatement(houseSQL)) {
+                    houseStmt.setString(1, house.getName());
+                    houseStmt.setInt(2, house.getYear());
+                    houseStmt.setInt(3, house.getNumberOfFlatsOnFloor());
+                    ResultSet rs = houseStmt.executeQuery();
+                    if (rs.next()) {
+                        houseId = rs.getInt("id");
+                    }
+                }
+            }
+
+            String flatSQL = "INSERT INTO flats " +
+                    "(name, x, y, creation_date, area, number_of_rooms, is_new, " +
+                    "time_to_metro_by_transport, view, house_id, owner_id) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?::flat_view_enum, ?, ?) RETURNING id";
+
+            long flatId;
+            try (PreparedStatement flatStmt = conn.prepareStatement(flatSQL)) {
+                flatStmt.setString(1, name);
+                flatStmt.setInt(2, coordinates.getX());
+                flatStmt.setInt(3, coordinates.getY());
+                flatStmt.setTimestamp(4, Timestamp.valueOf(creationDate.toLocalDateTime()));
+                flatStmt.setLong(5, area);
+                flatStmt.setLong(6, numberOfRooms);
+                flatStmt.setObject(7, isNew);
+                flatStmt.setDouble(8, timeToMetroByTransport);
+                flatStmt.setString(9, view.toString());
+                if (houseId != null) {
+                    flatStmt.setInt(10, houseId);
+                } else {
+                    flatStmt.setNull(10, Types.INTEGER);
+                }
+                flatStmt.setInt(11, currentUser.getId());
+
+                ResultSet rs = flatStmt.executeQuery();
+                if (rs.next()) {
+                    flatId = rs.getLong("id");
+                } else {
+                    conn.rollback();
+                    throw new SQLException("Failed to insert flat into database");
+                }
+            }
+
+            conn.commit();
+
+            Flat flat = new Flat();
+            flat.setId(flatId);
+            flat.setName(name);
+            flat.setCoordinates(coordinates);
+            flat.setCreationDate(creationDate);
+            flat.setArea(area);
+            flat.setNumberOfRooms(numberOfRooms);
+            flat.setNew(isNew);
+            flat.setTimeToMetroByTransport(timeToMetroByTransport);
+            flat.setView(view);
+            flat.setHouse(house);
+
+            flatSet.add(flat);
+            System.out.println("\nElement added successfully: " + flat);
+
+        } catch (SQLException e) {
+            System.err.println("Database error: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    // Prompt utilities
 
     private String prompt(String message, boolean allowEmpty) {
         while (true) {
@@ -205,36 +285,5 @@ public class AddCommand implements Command {
                 System.out.println("Invalid view. Options: " + java.util.Arrays.toString(View.values()));
             }
         }
-    }
-
-    private void addFlat(HashSet<Flat> flatSet, String name, int x, int y, long area,
-                         long numberOfRooms, Boolean isNew, double timeToMetroByTransport,
-                         View view, House house) {
-        long id = generateAutoIncrementId(flatSet);
-        ZonedDateTime creationDate = ZonedDateTime.now();
-        Coordinates coordinates = new Coordinates(x, y);
-
-        Flat flat = new Flat();
-        flat.setId(id);
-        flat.setName(name);
-        flat.setCoordinates(coordinates);
-        flat.setCreationDate(creationDate);
-        flat.setArea(area);
-        flat.setNumberOfRooms(numberOfRooms);
-        flat.setNew(isNew);
-        flat.setTimeToMetroByTransport(timeToMetroByTransport);
-        flat.setView(view);
-        flat.setHouse(house);
-
-        flatSet.add(flat);
-        System.out.println("\nElement added successfully: " + flat);
-    }
-
-    private long generateAutoIncrementId(HashSet<Flat> flatSet) {
-        long maxId = flatSet.stream()
-                .mapToLong(Flat::getId)
-                .max()
-                .orElse(0);
-        return maxId + 1;
     }
 }

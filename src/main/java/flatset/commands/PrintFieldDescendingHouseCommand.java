@@ -2,6 +2,7 @@ package flatset.commands;
 
 import flatset.Flat;
 import flatset.House;
+import flatset.auth.User;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -21,7 +22,7 @@ public class PrintFieldDescendingHouseCommand implements Command {
      * @param argument Не используется в данной команде.
      */
     @Override
-    public void execute(HashSet<Flat> flatSet, String argument) {
+    public void execute(HashSet<Flat> flatSet, String argument, User currentUser) {
         List<House> houses = flatSet.stream()
                 .map(Flat::getHouse)
                 .filter(house -> house != null)

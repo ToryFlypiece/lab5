@@ -1,6 +1,8 @@
 package flatset.commands;
 
 import flatset.Flat;
+import flatset.auth.User;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -12,14 +14,17 @@ import java.util.Map;
 public class CommandManager {
     private final Map<String, Command> commands = new HashMap<>();
     private final HashSet<Flat> flatSet;
+    private final User currentUser;
     private boolean isRunning = true;
 
     /**
      * Создает менеджер команд для работы с указанной коллекцией квартир
      * @param flatSet коллекция квартир для управления
+     * @param user текущий пользователь
      */
-    public CommandManager(HashSet<Flat> flatSet) {
+    public CommandManager(HashSet<Flat> flatSet, User user) {
         this.flatSet = flatSet;
+        this.currentUser = user;
         initializeCommands();
     }
 
@@ -50,8 +55,8 @@ public class CommandManager {
         registerCommand("print_field_descending_house", new PrintFieldDescendingHouseCommand());
 
         // Системные операции
-        registerCommand("execute_script", new ExecuteScriptCommand());
-        registerCommand("exit", (set, arg) -> isRunning = false);
+        registerCommand("execute_script", new ExecuteScriptCommand(currentUser));
+        registerCommand("exit", (set, arg, user) -> isRunning = false);
     }
 
     /**
@@ -74,7 +79,7 @@ public class CommandManager {
 
         Command command = commands.get(commandName);
         if (command != null) {
-            command.execute(flatSet, argument);
+            command.execute(flatSet, argument, currentUser);
         } else {
             System.out.println("Unknown command: " + commandName);
         }

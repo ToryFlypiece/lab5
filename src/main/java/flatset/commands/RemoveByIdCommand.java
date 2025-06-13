@@ -2,6 +2,7 @@ package flatset.commands;
 
 import flatset.Flat;
 import java.util.HashSet;
+import flatset.auth.User;
 
 /**
  * Команда для удаления квартиры по её ID.
@@ -16,7 +17,7 @@ public class RemoveByIdCommand implements Command {
      * @param argument Строка, содержащая ID квартиры для удаления.
      */
     @Override
-    public void execute(HashSet<Flat> flatSet, String argument) {
+    public void execute(HashSet<Flat> flatSet, String argument, User currentUser) {
         try {
             if (argument == null || argument.trim().isEmpty()) {
                 System.out.println("Error: ID is not defined. Usage: remove_by_id <id>");

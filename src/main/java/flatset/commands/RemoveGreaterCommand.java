@@ -3,6 +3,8 @@ package flatset.commands;
 import flatset.Flat;
 import flatset.utils.FlatParser;
 import java.util.HashSet;
+import flatset.auth.User;
+
 
 /**
  * Команда для удаления всех квартир, значение которых больше заданной квартиры.
@@ -17,7 +19,7 @@ public class RemoveGreaterCommand implements Command {
      * @param argument Строка, содержащая данные квартиры для сравнения.
      */
     @Override
-    public void execute(HashSet<Flat> flatSet, String argument) {
+    public void execute(HashSet<Flat> flatSet, String argument, User CurrentUser) {
         try {
             Flat comparisonFlat = FlatParser.parseFlat(argument);
             int initialSize = flatSet.size();

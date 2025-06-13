@@ -1,65 +1,82 @@
 package flatset.commands;
 
 import flatset.Flat;
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonWriter;
-import java.io.FileOutputStream;
+import flatset.House;
+import flatset.auth.User;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.HashSet;
+import java.sql.ResultSet;
 
 /**
- * Команда для сохранения данных о квартирах в файл в формате JSON.
+ * Команда для сохранения данных о квартирах в базу данных PostgreSQL.
  */
 public class SaveCommand implements Command {
-    private static final String DEFAULT_FILENAME = "flats.json";
+    private static final String DB_URL = "jdbc:postgresql://localhost:5432/flatset";
+    private static final String DB_USER = "postgres";
+    private static final String DB_PASSWORD = "admin";
 
-    /**
-     * Выполняет команду сохранения коллекции квартир в файл в формате JSON.
-     * Если имя файла не задано, используется имя файла по умолчанию.
-     *
-     * @param flatSet Коллекция квартир, которые необходимо сохранить.
-     * @param argument Имя файла для сохранения данных. Если пустое, используется значение по умолчанию.
-     */
     @Override
-    public void execute(HashSet<Flat> flatSet, String argument) {
-        String filename = argument.isEmpty() ? DEFAULT_FILENAME : argument.trim();
+    public void execute(HashSet<Flat> flatSet, String argument, User currentUser) {
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
+            conn.setAutoCommit(false);
 
-        try (FileOutputStream fos = new FileOutputStream(filename);
-             JsonWriter jsonWriter = Json.createWriter(fos)) {
+            String houseSQL = "INSERT INTO houses (name, year, number_of_flats_on_floor) " +
+                    "VALUES (?, ?, ?) " +
+                    "RETURNING id";
 
-            JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+            String flatSQL = "INSERT INTO flats (name, x, y, creation_date, area, number_of_rooms, is_new, " +
+                    "time_to_metro_by_transport, view, house_id) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?::flat_view_enum, ?) RETURNING id";
 
             for (Flat flat : flatSet) {
-                JsonObjectBuilder objectBuilder = Json.createObjectBuilder()
-                        .add("id", flat.getId())
-                        .add("name", flat.getName())
-                        .add("area", flat.getArea())
-                        .add("numberOfRooms", flat.getNumberOfRooms())
-                        .add("new", flat.isNew())
-                        .add("timeToMetroByTransport", flat.getTimeToMetroByTransport())
-                        .add("view", flat.getView().toString())
-                        .add("creationDate", flat.getCreationDate().toString());
+                Integer houseId = null;
+                House house = flat.getHouse();
 
-                objectBuilder.add("coordinates", Json.createObjectBuilder()
-                        .add("x", flat.getCoordinates().getX())
-                        .add("y", flat.getCoordinates().getY()));
-
-                if (flat.getHouse() != null) {
-                    objectBuilder.add("house", Json.createObjectBuilder()
-                            .add("name", flat.getHouse().getName())
-                            .add("year", flat.getHouse().getYear())
-                            .add("numberOfFlatsOnFloor", flat.getHouse().getNumberOfFlatsOnFloor()));
+                if (house != null) {
+                    try (PreparedStatement houseStmt = conn.prepareStatement(houseSQL)) {
+                        houseStmt.setString(1, house.getName());
+                        houseStmt.setInt(2, house.getYear());
+                        houseStmt.setInt(3, house.getNumberOfFlatsOnFloor());
+                        ResultSet rs = houseStmt.executeQuery();
+                        if (rs.next()) {
+                            houseId = rs.getInt("id");
+                        }
+                    }
                 }
 
-                arrayBuilder.add(objectBuilder);
+                try (PreparedStatement flatStmt = conn.prepareStatement(flatSQL)) {
+                    flatStmt.setString(1, flat.getName());
+                    flatStmt.setInt(2, flat.getCoordinates().getX());
+                    flatStmt.setInt(3, flat.getCoordinates().getY());
+                    flatStmt.setTimestamp(4, java.sql.Timestamp.valueOf(flat.getCreationDate().toLocalDateTime()));
+                    flatStmt.setLong(5, flat.getArea());
+                    flatStmt.setLong(6, flat.getNumberOfRooms());
+                    flatStmt.setObject(7, flat.isNew()); // может быть null
+                    flatStmt.setDouble(8, flat.getTimeToMetroByTransport());
+                    flatStmt.setString(9, flat.getView().toString());
+
+                    if (houseId != null) {
+                        flatStmt.setInt(10, houseId);
+                    } else {
+                        flatStmt.setNull(10, java.sql.Types.INTEGER);
+                    }
+
+                    ResultSet rs = flatStmt.executeQuery();
+                    if (rs.next()) {
+                        flat.setId(rs.getLong("id")); // обновляем объект в памяти
+                    }
+                }
             }
 
-            jsonWriter.writeArray(arrayBuilder.build());
-            System.out.println("Successfully saved " + flatSet.size() + " apartment(s) to " + filename);
+            conn.commit();
+            System.out.println("Successfully saved " + flatSet.size() + " apartment(s) to the database.");
 
-        } catch (Exception e) {
-            System.err.println("Error saving data: " + e.getMessage());
+        } catch (SQLException e) {
+            System.err.println("Database error while saving flats: " + e.getMessage());
         }
     }
 }

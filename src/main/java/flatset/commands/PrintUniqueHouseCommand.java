@@ -5,6 +5,8 @@ import flatset.House;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+import flatset.auth.User;
+
 
 /**
  * Команда для вывода уникальных домов, указанных в квартиках коллекции.
@@ -19,7 +21,7 @@ public class PrintUniqueHouseCommand implements Command {
      * @param argument Не используется в данной команде.
      */
     @Override
-    public void execute(HashSet<Flat> flatSet, String argument) {
+    public void execute(HashSet<Flat> flatSet, String argument, User currentUser) {
         Set<House> uniqueHouses = flatSet.stream()
                 .map(Flat::getHouse)
                 .filter(house -> house != null)

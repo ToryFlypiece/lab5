@@ -2,6 +2,7 @@ package flatset.commands;
 
 import java.util.HashSet;
 import flatset.Flat;
+import flatset.auth.User;
 
 /**
  * Команда для вывода справки по доступным командам.
@@ -15,7 +16,7 @@ public class HelpCommand implements Command {
      * @param argument Не используется.
      */
     @Override
-    public void execute(HashSet<Flat> flatSet, String argument) {
+    public void execute(HashSet<Flat> flatSet, String argument, User currentUser) {
         System.out.println("\n=== Available Commands ===");
         System.out.println("  help                              - Output the list of commands");
         System.out.println("  info                              - Output the collection info");

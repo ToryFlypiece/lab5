@@ -2,6 +2,7 @@ package flatset.commands;
 
 import flatset.Flat;
 import java.util.HashSet;
+import flatset.auth.User;
 
 /**
  * Команда для очистки коллекции квартир.
@@ -15,7 +16,7 @@ public class ClearCommand implements Command {
      * @param argument Не используется в данной команде.
      */
     @Override
-    public void execute(HashSet<Flat> flatSet, String argument) {
+    public void execute(HashSet<Flat> flatSet, String argument, User currentUser) {
         try {
             int sizeBefore = flatSet.size();
             flatSet.clear();

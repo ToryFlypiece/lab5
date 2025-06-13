@@ -4,6 +4,8 @@ import flatset.Coordinates;
 import flatset.Flat;
 import flatset.House;
 import flatset.View;
+import flatset.auth.User;
+
 
 import java.util.NoSuchElementException;
 import java.time.ZonedDateTime;
@@ -27,7 +29,7 @@ public class UpdateCommand implements Command {
     }
 
     @Override
-    public void execute(HashSet<Flat> flatSet, String argument) {
+    public void execute(HashSet<Flat> flatSet, String argument, User currentUser) {
         try {
             long id;
             Flat updatedFlat;

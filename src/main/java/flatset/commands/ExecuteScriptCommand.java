@@ -1,45 +1,49 @@
 package flatset.commands;
 
-import java.util.HashSet;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
 import flatset.Flat;
+import flatset.auth.User;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.HashSet;
+import java.util.Scanner;
 
 /**
  * Команда для выполнения скрипта из файла.
- * Скрипт представляет собой последовательность команд, записанных построчно.
  */
 public class ExecuteScriptCommand implements Command {
+    private final User currentUser;
 
-    /**
-     * Выполняет команды из указанного скрипта (текстового файла).
-     *
-     * @param flatSet Коллекция квартир, к которой применяются команды из скрипта.
-     * @param argument Путь к файлу скрипта. Ожидается, что каждая строка файла — отдельная команда.
-     */
+    public ExecuteScriptCommand(User user) {
+        this.currentUser = user;
+    }
+
     @Override
-    public void execute(HashSet<Flat> flatSet, String argument) {
-        try {
-            List<String> lines = Files.readAllLines(Paths.get(argument));
+    public void execute(HashSet<Flat> flatSet, String argument, User currentUser) {
+        if (argument == null || argument.isEmpty()) {
+            System.out.println("Файл скрипта не указан.");
+            return;
+        }
 
-            CommandManager tempManager = new CommandManager(flatSet);
+        File scriptFile = new File(argument);
+        if (!scriptFile.exists() || !scriptFile.canRead()) {
+            System.out.println("Файл не найден или недоступен: " + argument);
+            return;
+        }
 
-            for (String line : lines) {
-                if (line.trim().isEmpty() || line.startsWith("#")) {
-                    continue;
-                }
+        try (Scanner fileScanner = new Scanner(scriptFile)) {
+            CommandManager tempCommandManager = new CommandManager(flatSet, currentUser);
 
-                try {
-                    System.out.println("Executing: " + line);
-                    tempManager.executeCommand(line);
-                } catch (Exception e) {
-                    System.err.println("Error executing the command: " + line);
-                    System.err.println("Error: " + e.getMessage());
+            while (fileScanner.hasNextLine()) {
+                String line = fileScanner.nextLine().trim();
+                if (!line.isEmpty()) {
+                    System.out.println("> " + line);
+                    tempCommandManager.executeCommand(line);
                 }
             }
-        } catch (Exception e) {
-            System.err.println("Script execution failed: " + e.getMessage());
+
+        } catch (FileNotFoundException e) {
+            System.out.println("Ошибка при открытии файла: " + e.getMessage());
         }
     }
 }

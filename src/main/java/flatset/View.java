@@ -14,5 +14,5 @@ public enum View
     STREET,
     PARK,
     BAD,
-    NORMAL;
+    GOOD;
 }
