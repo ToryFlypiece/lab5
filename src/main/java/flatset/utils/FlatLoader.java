@@ -27,7 +27,7 @@ public class FlatLoader {
         HashSet<Flat> flatSet = new HashSet<>();
 
         String sql = "SELECT f.id, f.name, f.x, f.y, f.creation_date, f.area, f.number_of_rooms, " +
-                "f.is_new, f.time_to_metro_by_transport, f.view, " +
+                "f.is_new, f.time_to_metro_by_transport, f.view, f.owner_id, " +
                 "h.name AS house_name, h.year AS house_year, h.number_of_flats_on_floor " +
                 "FROM flats f LEFT JOIN houses h ON f.house_id = h.id";
 
@@ -71,6 +71,9 @@ public class FlatLoader {
                         continue;
                     }
                 }
+
+                Integer ownerId = (Integer) rs.getObject("owner_id");
+                flat.setOwnerId(ownerId);
 
                 // Дом (опционально)
                 String houseName = rs.getString("house_name");

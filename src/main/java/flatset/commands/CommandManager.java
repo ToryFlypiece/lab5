@@ -7,30 +7,19 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-/**
- * Менеджер команд для управления коллекцией квартир.
- * Обеспечивает регистрацию, хранение и выполнение команд.
- */
 public class CommandManager {
     private final Map<String, Command> commands = new HashMap<>();
     private final HashSet<Flat> flatSet;
-    private final User currentUser;
+    private User currentUser;
     private boolean isRunning = true;
+    private boolean isLoggedIn = true;
 
-    /**
-     * Создает менеджер команд для работы с указанной коллекцией квартир
-     * @param flatSet коллекция квартир для управления
-     * @param user текущий пользователь
-     */
     public CommandManager(HashSet<Flat> flatSet, User user) {
         this.flatSet = flatSet;
         this.currentUser = user;
         initializeCommands();
     }
 
-    /**
-     * Инициализирует все доступные команды
-     */
     private void initializeCommands() {
         registerCommand("help", new HelpCommand());
         registerCommand("info", new InfoCommand());
@@ -39,39 +28,24 @@ public class CommandManager {
         registerCommand("remove_by_id", new RemoveByIdCommand());
         registerCommand("clear", new ClearCommand());
         registerCommand("save", new SaveCommand());
-
-        // Условные операции
         registerCommand("add_if_min", new AddIfMinCommand());
         registerCommand("add_if_max", new AddIfMaxCommand());
         registerCommand("remove_greater", new RemoveGreaterCommand());
-
-        // Операции обновления
         registerCommand("update", new UpdateCommand());
         registerCommand("update_by_id", new UpdateByIdCommand());
-
-        // Операции отображения полей
         registerCommand("print_unique_house", new PrintUniqueHouseCommand());
         registerCommand("print_field_ascending_number_of_rooms", new PrintFieldAscendingNumberOfRoomsCommand());
         registerCommand("print_field_descending_house", new PrintFieldDescendingHouseCommand());
-
-        // Системные операции
         registerCommand("execute_script", new ExecuteScriptCommand(currentUser));
         registerCommand("exit", (set, arg, user) -> isRunning = false);
+
+        registerCommand("logout", new LogoutCommand());
     }
 
-    /**
-     * Регистрирует новую команду
-     * @param name название команды
-     * @param command объект команды
-     */
     public void registerCommand(String name, Command command) {
         commands.put(name.toLowerCase(), command);
     }
 
-    /**
-     * Выполняет команду по строковому вводу
-     * @param input строка с командой и аргументами
-     */
     public void executeCommand(String input) {
         String[] parts = input.split(" ", 2);
         String commandName = parts[0].toLowerCase();
@@ -80,16 +54,27 @@ public class CommandManager {
         Command command = commands.get(commandName);
         if (command != null) {
             command.execute(flatSet, argument, currentUser);
+            if ("logout".equals(commandName)) {
+                currentUser = null;
+                isLoggedIn = false;
+                isRunning = false; // или можно просто прервать работу, если нужно
+            }
         } else {
             System.out.println("Unknown command: " + commandName);
         }
     }
 
-    /**
-     * Проверяет, работает ли менеджер команд
-     * @return true если менеджер продолжает работу, false если получена команда выхода
-     */
     public boolean isRunning() {
-        return isRunning;
+        return isRunning && isLoggedIn;
+    }
+
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(User user) {
+        this.currentUser = user;
+        this.isLoggedIn = user != null;
+        this.isRunning = user != null;
     }
 }

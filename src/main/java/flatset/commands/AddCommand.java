@@ -195,6 +195,7 @@ public class AddCommand implements Command {
             flat.setTimeToMetroByTransport(timeToMetroByTransport);
             flat.setView(view);
             flat.setHouse(house);
+            flat.setOwnerId(currentUser.getId());
 
             flatSet.add(flat);
             System.out.println("\nElement added successfully: " + flat);

@@ -12,54 +12,63 @@ public class Main {
     public static void main(String[] args) {
         HashSet<Flat> flatSet = FlatLoader.loadInitialData();
         Scanner scanner = new Scanner(System.in);
-        User currentUser = null;
 
         System.out.println("=== Flat Collection Manager ===");
 
-        while (currentUser == null) {
-            System.out.print("Login (l) or Register (r)? ");
-            String choice = scanner.nextLine().trim().toLowerCase();
+        while (true) {
+            User currentUser = null;
 
-            System.out.print("Username: ");
-            String username = scanner.nextLine().trim();
+            while (currentUser == null) {
+                System.out.print("Login (l), Register (r), or Exit (e)? ");
+                String choice = scanner.nextLine().trim().toLowerCase();
 
-            System.out.print("Password: ");
-            String password = scanner.nextLine().trim();
-
-            if (choice.equals("r")) {
-                currentUser = AuthManager.register(username, password);
-                if (currentUser != null) {
-                    System.out.println("Registration successful.\n");
+                if (choice.equals("e")) {
+                    System.out.println("Exiting program.");
+                    scanner.close();
+                    System.exit(0);
                 }
-            } else if (choice.equals("l")) {
-                currentUser = AuthManager.login(username, password);
-                if (currentUser != null) {
-                    System.out.println("Login successful.\n");
+
+                System.out.print("Username: ");
+                String username = scanner.nextLine().trim();
+
+                System.out.print("Password: ");
+                String password = scanner.nextLine().trim();
+
+                if (choice.equals("r")) {
+                    currentUser = AuthManager.register(username, password);
+                    if (currentUser != null) {
+                        System.out.println("Registration successful.\n");
+                    }
+                } else if (choice.equals("l")) {
+                    currentUser = AuthManager.login(username, password);
+                    if (currentUser != null) {
+                        System.out.println("Login successful.\n");
+                    }
+                }
+
+                if (currentUser == null) {
+                    System.out.println("Authentication failed, try again.\n");
                 }
             }
 
-            if (currentUser == null) {
-                System.out.println("Authentication failed, try again.\n");
+            CommandManager commandManager = new CommandManager(flatSet, currentUser);
+
+            System.out.println("Print 'help' to see the commands list\n");
+
+            while (commandManager.isRunning()) {
+                System.out.print("> ");
+                if (!scanner.hasNextLine()) {
+                    System.out.println("\nEOF: Exiting");
+                    scanner.close();
+                    System.exit(0);
+                }
+                String input = scanner.nextLine().trim();
+                if (!input.isEmpty()) {
+                    commandManager.executeCommand(input);
+                }
             }
+
+            System.out.println("You have been logged out.\n");
         }
-
-        CommandManager commandManager = new CommandManager(flatSet, currentUser);
-
-        System.out.println("Print 'help' to see the commands list\n");
-
-        while (commandManager.isRunning()) {
-            System.out.print("> ");
-            if (!scanner.hasNextLine()) {
-                System.out.println("\nEOF: Exiting");
-                break;
-            }
-            String input = scanner.nextLine().trim();
-            if (!input.isEmpty()) {
-                commandManager.executeCommand(input);
-            }
-        }
-
-        scanner.close();
-        System.out.println("Program is terminated");
     }
 }
