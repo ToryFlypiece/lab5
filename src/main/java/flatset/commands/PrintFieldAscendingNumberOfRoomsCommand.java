@@ -2,7 +2,7 @@ package flatset.commands;
 
 import flatset.Flat;
 import flatset.auth.User;
-import java.util.HashSet;
+import java.util.Set;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -22,7 +22,7 @@ public class PrintFieldAscendingNumberOfRoomsCommand implements Command {
      * @param argument Не используется в данной команде.
      */
     @Override
-    public void execute(HashSet<Flat> flatSet, String argument, User currentUser) {
+    public void execute(Set<Flat> flatSet, String argument, User currentUser) {
         Map<Long, List<Flat>> flatsByRooms = flatSet.stream()
                 .collect(Collectors.groupingBy(Flat::getNumberOfRooms));
 

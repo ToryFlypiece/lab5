@@ -6,7 +6,7 @@ import flatset.auth.User;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.util.HashSet;
+import java.util.Set;
 
 public class RemoveByIdCommand implements Command {
 
@@ -15,7 +15,7 @@ public class RemoveByIdCommand implements Command {
     private static final String DB_PASSWORD = "admin";
 
     @Override
-    public void execute(HashSet<Flat> flatSet, String argument, User currentUser) {
+    public void execute(Set<Flat> flatSet, String argument, User currentUser) {
         try {
             if (argument == null || argument.trim().isEmpty()) {
                 System.out.println("Error: ID is not defined. Usage: remove_by_id <id>");

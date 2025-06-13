@@ -4,17 +4,17 @@ import flatset.Flat;
 import flatset.auth.User;
 
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Set;
 import java.util.Map;
 
 public class CommandManager {
     private final Map<String, Command> commands = new HashMap<>();
-    private final HashSet<Flat> flatSet;
+    private final Set<Flat> flatSet;
     private User currentUser;
     private boolean isRunning = true;
     private boolean isLoggedIn = true;
 
-    public CommandManager(HashSet<Flat> flatSet, User user) {
+    public CommandManager(Set<Flat> flatSet, User user) {
         this.flatSet = flatSet;
         this.currentUser = user;
         initializeCommands();

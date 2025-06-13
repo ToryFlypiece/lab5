@@ -2,7 +2,7 @@ package flatset.commands;
 
 import flatset.Flat;
 import flatset.auth.User;
-import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Команда для отображения всех квартир в коллекции.
@@ -17,7 +17,7 @@ public class ShowCommand implements Command {
      * @param argument Аргумент команды (не используется в данном случае).
      */
     @Override
-    public void execute(HashSet<Flat> flatSet, String argument, User currentUser) {
+    public void execute(Set<Flat> flatSet, String argument, User currentUser) {
         if (flatSet.isEmpty()) {
             System.out.println("Collection is empty.");
         } else {

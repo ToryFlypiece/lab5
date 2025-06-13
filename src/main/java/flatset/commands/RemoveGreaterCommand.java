@@ -7,7 +7,7 @@ import flatset.auth.User;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.util.HashSet;
+import java.util.Set;
 import java.util.Iterator;
 
 public class RemoveGreaterCommand implements Command {
@@ -17,7 +17,7 @@ public class RemoveGreaterCommand implements Command {
     private static final String DB_PASSWORD = "admin";
 
     @Override
-    public void execute(HashSet<Flat> flatSet, String argument, User currentUser) {
+    public void execute(Set<Flat> flatSet, String argument, User currentUser) {
         try {
             Flat comparisonFlat = FlatParser.parseFlat(argument);
             int removedCount = 0;

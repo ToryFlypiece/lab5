@@ -11,7 +11,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.util.NoSuchElementException;
 import java.time.ZonedDateTime;
-import java.util.HashSet;
+import java.util.Set;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -35,7 +35,7 @@ public class UpdateCommand implements Command {
     }
 
     @Override
-    public void execute(HashSet<Flat> flatSet, String argument, User currentUser) {
+    public void execute(Set<Flat> flatSet, String argument, User currentUser) {
         try {
             long id;
             Flat updatedFlat;

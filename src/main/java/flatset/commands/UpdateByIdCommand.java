@@ -6,7 +6,7 @@ import flatset.utils.FlatUpdater;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.util.HashSet;
+import java.util.Set;
 import java.util.Optional;
 
 /**
@@ -28,7 +28,7 @@ public class UpdateByIdCommand implements Command {
      * @param argument Аргумент команды, содержащий ID квартиры и строку с полями для обновления в формате {field:value}.
      */
     @Override
-    public void execute(HashSet<Flat> flatSet, String argument, User currentUser) {
+    public void execute(Set<Flat> flatSet, String argument, User currentUser) {
         try {
             String[] parts = argument.split(" ", 2);
             if (parts.length != 2) {

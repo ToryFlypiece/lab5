@@ -2,7 +2,7 @@ package flatset.commands;
 
 import flatset.Flat;
 import flatset.auth.User;
-import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Интерфейс, представляющий команду для работы с коллекцией квартир.
@@ -18,5 +18,5 @@ public interface Command {
      * @throws IllegalArgumentException если аргумент команды некорректен
      * @throws IllegalStateException если состояние коллекции не позволяет выполнить команду
      */
-    void execute(HashSet<Flat> flatSet, String argument, User currentUser);
+    void execute(Set<Flat> flatSet, String argument, User currentUser);
 }

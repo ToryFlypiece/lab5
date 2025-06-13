@@ -5,7 +5,7 @@ import flatset.auth.User;
 
 import java.sql.*;
 import java.time.ZonedDateTime;
-import java.util.HashSet;
+import java.util.Set;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
@@ -20,7 +20,7 @@ public class AddCommand implements Command {
         this.scanner = new Scanner(System.in);
     }
 
-    public void execute(HashSet<Flat> flatSet, String argument, User currentUser) {
+    public void execute(Set<Flat> flatSet, String argument, User currentUser) {
         try {
             if (argument == null || argument.trim().isEmpty()) {
                 addInteractive(flatSet, currentUser);
@@ -34,7 +34,7 @@ public class AddCommand implements Command {
         }
     }
 
-    private void addFromArgument(HashSet<Flat> flatSet, String argument, User currentUser) throws SQLException {
+    private void addFromArgument(Set<Flat> flatSet, String argument, User currentUser) throws SQLException {
         if (!argument.startsWith("{") || !argument.endsWith("}")) {
             throw new IllegalArgumentException("Invalid format. Parameters must be in curly brackets");
         }
@@ -100,7 +100,7 @@ public class AddCommand implements Command {
         addFlatToDbAndMemory(flatSet, name, x, y, area, numberOfRooms, isNew, timeToMetroByTransport, view, house, currentUser);
     }
 
-    private void addInteractive(HashSet<Flat> flatSet, User currentUser) throws SQLException {
+    private void addInteractive(Set<Flat> flatSet, User currentUser) throws SQLException {
         System.out.println("\nAdding new flat (interactive mode)");
         System.out.println("---------------------------------");
 
@@ -126,7 +126,7 @@ public class AddCommand implements Command {
         addFlatToDbAndMemory(flatSet, name, x, y, area, numberOfRooms, isNew, timeToMetroByTransport, view, house, currentUser);
     }
 
-    private void addFlatToDbAndMemory(HashSet<Flat> flatSet, String name, int x, int y, long area,
+    private void addFlatToDbAndMemory(Set<Flat> flatSet, String name, int x, int y, long area,
                                       long numberOfRooms, Boolean isNew, double timeToMetroByTransport,
                                       View view, House house, User currentUser) throws SQLException {
         ZonedDateTime creationDate = ZonedDateTime.now();

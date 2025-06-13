@@ -5,7 +5,7 @@ import flatset.auth.User;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.HashSet;
+import java.util.Set;
 import java.util.Scanner;
 
 /**
@@ -19,7 +19,7 @@ public class ExecuteScriptCommand implements Command {
     }
 
     @Override
-    public void execute(HashSet<Flat> flatSet, String argument, User currentUser) {
+    public void execute(Set<Flat> flatSet, String argument, User currentUser) {
         if (argument == null || argument.isEmpty()) {
             System.out.println("Файл скрипта не указан.");
             return;

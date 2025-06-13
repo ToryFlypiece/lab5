@@ -7,7 +7,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.HashSet;
+import java.util.Set;
 import java.util.Iterator;
 
 public class ClearCommand implements Command {
@@ -16,7 +16,7 @@ public class ClearCommand implements Command {
     private static final String DB_PASSWORD = "admin";
 
     @Override
-    public void execute(HashSet<Flat> flatSet, String argument, User currentUser) {
+    public void execute(Set<Flat> flatSet, String argument, User currentUser) {
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
             conn.setAutoCommit(false);
 

@@ -2,7 +2,6 @@ package flatset.commands;
 
 import flatset.Flat;
 import flatset.House;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import flatset.auth.User;
@@ -21,7 +20,7 @@ public class PrintUniqueHouseCommand implements Command {
      * @param argument Не используется в данной команде.
      */
     @Override
-    public void execute(HashSet<Flat> flatSet, String argument, User currentUser) {
+    public void execute(Set<Flat> flatSet, String argument, User currentUser) {
         Set<House> uniqueHouses = flatSet.stream()
                 .map(Flat::getHouse)
                 .filter(house -> house != null)

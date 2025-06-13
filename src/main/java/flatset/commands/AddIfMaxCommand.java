@@ -6,7 +6,7 @@ import flatset.utils.FlatParser;
 
 import java.sql.*;
 import java.time.ZonedDateTime;
-import java.util.HashSet;
+import java.util.Set;
 import java.util.Optional;
 
 public class AddIfMaxCommand implements Command {
@@ -15,7 +15,7 @@ public class AddIfMaxCommand implements Command {
     private static final String DB_PASSWORD = "admin";
 
     @Override
-    public void execute(HashSet<Flat> flatSet, String argument, User currentUser) {
+    public void execute(Set<Flat> flatSet, String argument, User currentUser) {
         try {
             Flat newFlat = FlatParser.parseFlat(argument);
 

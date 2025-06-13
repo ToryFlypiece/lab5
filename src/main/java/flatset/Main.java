@@ -5,12 +5,14 @@ import flatset.auth.User;
 import flatset.commands.CommandManager;
 import flatset.utils.FlatLoader;
 
-import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Main {
     public static void main(String[] args) {
-        HashSet<Flat> flatSet = FlatLoader.loadInitialData();
+        Set<Flat> flatSet = ConcurrentHashMap.newKeySet();
+        flatSet.addAll(FlatLoader.loadInitialData());
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("=== Flat Collection Manager ===");
