@@ -2,31 +2,46 @@ package flatset.commands;
 
 import flatset.Flat;
 import flatset.utils.FlatParser;
-import java.util.HashSet;
 import flatset.auth.User;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.util.HashSet;
+import java.util.Iterator;
 
-/**
- * Команда для удаления всех квартир, значение которых больше заданной квартиры.
- */
 public class RemoveGreaterCommand implements Command {
 
-    /**
-     * Выполняет команду удаления всех квартир, чьи значения больше значения заданной квартиры.
-     * Значение квартиры сравнивается с помощью метода `compareTo`.
-     *
-     * @param flatSet Коллекция квартир, из которой удаляются квартиры.
-     * @param argument Строка, содержащая данные квартиры для сравнения.
-     */
+    private static final String DB_URL = "jdbc:postgresql://localhost:5432/flatset";
+    private static final String DB_USER = "postgres";
+    private static final String DB_PASSWORD = "admin";
+
     @Override
-    public void execute(HashSet<Flat> flatSet, String argument, User CurrentUser) {
+    public void execute(HashSet<Flat> flatSet, String argument, User currentUser) {
         try {
             Flat comparisonFlat = FlatParser.parseFlat(argument);
-            int initialSize = flatSet.size();
+            int removedCount = 0;
 
-            flatSet.removeIf(flat -> flat.compareTo(comparisonFlat) > 0);
+            Iterator<Flat> iterator = flatSet.iterator();
 
-            int removedCount = initialSize - flatSet.size();
+            try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
+                while (iterator.hasNext()) {
+                    Flat flat = iterator.next();
+                    if (flat.compareTo(comparisonFlat) > 0) {
+                        if (flat.getOwnerId() != null && flat.getOwnerId().equals(currentUser.getId())) {
+                            PreparedStatement ps = conn.prepareStatement("DELETE FROM flats WHERE id = ? AND owner_id = ?");
+                            ps.setLong(1, flat.getId());
+                            ps.setInt(2, currentUser.getId());
+                            int rowsDeleted = ps.executeUpdate();
+                            if (rowsDeleted > 0) {
+                                iterator.remove();
+                                removedCount++;
+                            }
+                        }
+                    }
+                }
+            }
+
             System.out.println("Removed " + removedCount + " apartments with values greater than the given one.");
         } catch (Exception e) {
             System.err.println("Error deleting apartments: " + e.getMessage());

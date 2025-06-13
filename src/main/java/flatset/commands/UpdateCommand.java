@@ -6,7 +6,9 @@ import flatset.House;
 import flatset.View;
 import flatset.auth.User;
 
-
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.util.NoSuchElementException;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
@@ -14,7 +16,7 @@ import java.util.Optional;
 import java.util.Scanner;
 
 /**
- * Команда для добавления нового элемента в коллекцию квартир.
+ * Команда для обновления значений элемента в коллекции квартир.
  * Поддерживает два режима:
  * 1. Аргументный режим: все параметры передаются одной строкой
  * 2. Интерактивный режим: запрашивает параметры по одному
@@ -23,6 +25,10 @@ import java.util.Scanner;
 public class UpdateCommand implements Command {
 
     private final Scanner scanner;
+
+    private static final String DB_URL = "jdbc:postgresql://localhost:5432/flatset";
+    private static final String DB_USER = "postgres";
+    private static final String DB_PASSWORD = "admin";
 
     public UpdateCommand() {
         this.scanner = new Scanner(System.in);
@@ -48,15 +54,57 @@ public class UpdateCommand implements Command {
                 updatedFlat = flatset.utils.FlatParser.parseFlat(parts[1]);
             }
 
-            Optional<Flat> existing = flatSet.stream()
+            Optional<Flat> existingOpt = flatSet.stream()
                     .filter(f -> f.getId() == id)
                     .findFirst();
 
-            if (existing.isPresent()) {
+            if (existingOpt.isPresent()) {
+                Flat existing = existingOpt.get();
+
+                if (existing.getOwnerId() == null || !existing.getOwnerId().equals(currentUser.getId())) {
+                    System.out.println("You do not have permission to update this apartment.");
+                    return;
+                }
+
                 updatedFlat.setId(id);
-                flatSet.remove(existing.get());
-                flatSet.add(updatedFlat);
-                System.out.println("Updated apartment with ID " + id);
+
+                try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
+                    PreparedStatement ps = conn.prepareStatement(
+                            "UPDATE flats SET name = ?, x = ?, y = ?, area = ?, number_of_rooms = ?, is_new = ?, " +
+                                    "time_to_metro_by_transport = ?, view = ?, house_name = ?, house_year = ?, number_of_flats_on_floor = ? " +
+                                    "WHERE id = ? AND owner_id = ?"
+                    );
+
+                    ps.setString(1, updatedFlat.getName());
+                    ps.setInt(2, updatedFlat.getCoordinates().getX());
+                    ps.setInt(3, updatedFlat.getCoordinates().getY());
+                    ps.setLong(4, updatedFlat.getArea());
+                    ps.setLong(5, updatedFlat.getNumberOfRooms());
+                    ps.setBoolean(6, updatedFlat.isNew());
+                    ps.setDouble(7, updatedFlat.getTimeToMetroByTransport());
+                    ps.setString(8, updatedFlat.getView() != null ? updatedFlat.getView().name() : null);
+                    if (updatedFlat.getHouse() != null) {
+                        ps.setString(9, updatedFlat.getHouse().getName());
+                        ps.setInt(10, updatedFlat.getHouse().getYear());
+                        ps.setInt(11, updatedFlat.getHouse().getNumberOfFlatsOnFloor());
+                    } else {
+                        ps.setNull(9, java.sql.Types.VARCHAR);
+                        ps.setNull(10, java.sql.Types.INTEGER);
+                        ps.setNull(11, java.sql.Types.INTEGER);
+                    }
+                    ps.setLong(12, id);
+                    ps.setInt(13, currentUser.getId());
+
+                    int rowsUpdated = ps.executeUpdate();
+
+                    if (rowsUpdated > 0) {
+                        flatSet.remove(existing);
+                        flatSet.add(updatedFlat);
+                        System.out.println("Updated apartment with ID " + id);
+                    } else {
+                        System.out.println("Apartment with ID " + id + " not found or you do not have permission to update.");
+                    }
+                }
             } else {
                 System.out.println("Apartment with ID " + id + " not found.");
             }
