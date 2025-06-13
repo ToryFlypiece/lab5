@@ -11,8 +11,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class FlatLoader {
     private static final String DB_URL = "jdbc:postgresql://localhost:5432/flatset";
@@ -21,10 +21,10 @@ public class FlatLoader {
 
     /**
      * Загружает исходные данные из базы данных
-     * @return Множество загруженных квартир или пустое множество при ошибках
+     * @return Потокобезопасное множество загруженных квартир или пустое множество при ошибках
      */
-    public static HashSet<Flat> loadInitialData() {
-        HashSet<Flat> flatSet = new HashSet<>();
+    public static Set<Flat> loadInitialData() {
+        Set<Flat> flatSet = ConcurrentHashMap.newKeySet();
 
         String sql = "SELECT f.id, f.name, f.x, f.y, f.creation_date, f.area, f.number_of_rooms, " +
                 "f.is_new, f.time_to_metro_by_transport, f.view, f.owner_id, " +
