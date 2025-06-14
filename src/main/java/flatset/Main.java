@@ -9,8 +9,17 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import flatset.gui.AuthFrame;
+import javax.swing.SwingUtilities;
+
 public class Main {
     public static void main(String[] args) {
+
+        SwingUtilities.invokeLater(() -> {
+            AuthFrame authFrame = new AuthFrame();
+            authFrame.setVisible(true);
+        });
+
         Set<Flat> flatSet = ConcurrentHashMap.newKeySet();
         flatSet.addAll(FlatLoader.loadInitialData());
         Scanner scanner = new Scanner(System.in);

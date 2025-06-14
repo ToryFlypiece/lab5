@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.*;
+import java.util.function.Consumer;
+
 
 /**
  * Менеджер команд.
@@ -19,10 +21,11 @@ public class CommandManager {
     private boolean isRunning = true;
     private boolean isLoggedIn = true;
 
-    // Пулы потоков
     private static final ForkJoinPool readPool = new ForkJoinPool();                      // для чтения команд
     private static final ExecutorService commandPool = Executors.newCachedThreadPool();   // выполнение команд
     private static final ExecutorService responsePool = Executors.newFixedThreadPool(4);  // вывод ответов
+    private Consumer<String> outputHandler = System.out::println;
+
 
     public CommandManager(Set<Flat> flatSet, User user, Scanner scanner) {
         this.flatSet = flatSet;
@@ -99,6 +102,10 @@ public class CommandManager {
                 || name.equals("update")
                 || name.equals("update_by_id")
                 || name.equals("execute_script");
+    }
+
+    public void setOutputHandler(Consumer<String> outputHandler) {
+        this.outputHandler = outputHandler;
     }
 
     public boolean isRunning() {

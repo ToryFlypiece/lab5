@@ -36,8 +36,6 @@ public class UpdateCommand implements InteractiveCommand {
     }
 
     private void updateFromArgument(Set<Flat> flatSet, String argument, User currentUser) throws SQLException {
-        // Аргумент должен содержать id и параметры, формат примерно:
-        // {id, name,x,y,area,numberOfRooms,isNew,timeToMetroByTransport,view, {houseName,houseYear,houseNumberOfFlats}}
 
         if (!argument.startsWith("{") || !argument.endsWith("}")) {
             throw new IllegalArgumentException("Invalid format. Parameters must be in curly brackets");
